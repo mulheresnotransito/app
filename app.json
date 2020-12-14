@@ -1,0 +1,12 @@
+{
+  "name": "mulheres-no-transito",
+  "displayName": "mulheres-no-transito",
+  "expo": {
+    "name": "mulheres-no-transito",
+    "slug": "mulheres-no-transito",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
