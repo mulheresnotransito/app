@@ -22,6 +22,8 @@ import * as Styled from '../assets/styles/styled';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
+import * as functions from '../services/functions.service';
+
 const ChoiceSessions = (props) => {
 
   const [userToLogin, setUserToLogin] = React.useState({
@@ -86,20 +88,34 @@ const ChoiceSessions = (props) => {
 
   const [selectedMonth, setSelectedMonth] = React.useState(months[0]);
 
+  React.useEffect(() => {
+    console.log({ consultations: props.consultations })
+  }, []);
+
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
       <Header screenTitle="Home" psychologist navigation={props.navigation} />
 
       {/* <Styled.Scroll> */}
       <Styled.ScrollContainer>
-        <Styled.TxtQuestion style={{ fontSize: 18, fontWeight: '400', width: '90%', textAlign: 'left' }}>Próximas sessões</Styled.TxtQuestion>
+        <Styled.SectionTitle style={{ width: '90%' }}>Próximas sessões</Styled.SectionTitle>
+        {/* <Styled.TxtQuestion style={{ fontSize: 18, fontWeight: '400', width: '90%', textAlign: 'left' }}>Próximas sessões</Styled.TxtQuestion> */}
 
         <Styled.ScrollHorizontal>
-          {nextClasses && nextClasses.map(c => {
+          {props.consultations && props.consultations.map((c, index, arr) => {
+
+            let opacity = (((arr.length - (index + 1)) / arr.length) + (1 / arr.length));
+            // let opacity = (index + 1) / arr.length;
+            console.log({ opacity })
+
             return (
-              <Styled.ClassBoxCircleContainer style={{ backgroundColor: c.color }} key={c.id}>
-                <Styled.ClassBoxCircleDay>{c.day}</Styled.ClassBoxCircleDay>
-                <Styled.ClassBoxCircleMonth>{c.month}</Styled.ClassBoxCircleMonth>
+              <Styled.ClassBoxCircleContainer
+                // style={{ backgroundColor: c.color }} key={c.id}>
+
+                activeOpacity={0.7}
+                style={{ backgroundColor: 'rgba(196, 58, 87, ' + opacity + ')' }} key={c.id}>
+                <Styled.ClassBoxCircleDay>{(c.date).getDate()}</Styled.ClassBoxCircleDay>
+                <Styled.ClassBoxCircleMonth>{functions.getMonthName((c.date).getMonth())}</Styled.ClassBoxCircleMonth>
               </Styled.ClassBoxCircleContainer>
             );
           })}
@@ -166,6 +182,9 @@ const mapStateToProps = (state) => {
   return {
     //modal
     modalInfoVisible: state.modalReducer.modalInfoVisible,
+
+    //consultations
+    consultations: state.consultationReducer.consultations,
   }
 };
 

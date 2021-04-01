@@ -27,14 +27,14 @@ const Header = (props) => {
         <Styled.HeaderComp>
           <Styled.HeaderTxtComp>Crédito:</Styled.HeaderTxtComp>
           <Styled.Illustration source={heartbeat} style={{ width: 15, height: 13.12, marginHorizontal: 1 }} />
-          <Styled.HeaderTxtComp>5 sessões</Styled.HeaderTxtComp>
+          <Styled.HeaderTxtComp>{props.user.consultations_credits} sessões</Styled.HeaderTxtComp>
         </Styled.HeaderComp>
       )}
       {props.client && (
         <Styled.HeaderComp>
           <Styled.HeaderTxtComp>Crédito:</Styled.HeaderTxtComp>
           <Styled.Illustration source={car} style={{ width: 15, height: 11.25, marginHorizontal: 1 }} />
-          <Styled.HeaderTxtComp>5 corridas</Styled.HeaderTxtComp>
+          <Styled.HeaderTxtComp>{props.user.classes_credits} corridas</Styled.HeaderTxtComp>
         </Styled.HeaderComp>
       )}
     </Styled.HeaderContainer>
@@ -45,6 +45,8 @@ const mapStateToProps = (state) => {
   return {
     //modal
     modalInfoVisible: state.modalReducer.modalInfoVisible,
+    //user
+    user: state.userReducer,
   }
 };
 

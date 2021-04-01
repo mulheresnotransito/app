@@ -14,7 +14,8 @@ import { connect } from 'react-redux';
 
 import { MaterialIcons } from '@expo/vector-icons';
 
-import logo from '../assets/images/logo-1.png';
+// import logo from '../assets/images/logo-1.png';
+import logo from '../assets/images/logo1.png';
 import illustration from '../assets/images/illustration-1.png';
 import facebook from '../assets/icons/facebook.png';
 

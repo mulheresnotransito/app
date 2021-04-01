@@ -14,7 +14,8 @@ import { connect } from 'react-redux';
 
 import { FontAwesome } from '@expo/vector-icons';
 
-import logo from '../assets/images/logo-1.png';
+// import logo from '../assets/images/logo-1.png';
+import logo from '../assets/images/logo1.png';
 
 import * as Styled from '../assets/styles/styled';
 import ModalInfo from '../components/modals/ModalInfo';

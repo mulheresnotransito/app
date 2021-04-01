@@ -11,8 +11,6 @@ import {
   Dimensions,
   ImageBackground
 } from 'react-native';
-import MapView from 'react-native-maps';
-
 import { connect } from 'react-redux';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -27,27 +25,17 @@ import * as Styled from '../assets/styles/styled';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
+import * as functions from '../services/functions.service';
+import * as Location from 'expo-location';
+import MapView, { Marker } from 'react-native-maps';
+
+import pic from '../assets/images/profile-pic-1.png';
+import { set } from 'react-native-reanimated';
+
 const Home = (props) => {
 
-  const [userToLogin, setUserToLogin] = React.useState({
-    email: '',
-    password: ''
-  });
 
-  const loginUser = (user) => {
-    // if(user.email == 'teste@hinoselouvores.com' && user.password == '123456')
-    //   navigation.navigate('Home');
-    // else
-    //   Alert.alert('Erro', 'Usuário ou senha incorretos');
-    props.navigation.navigate('Market');
-  }
-
-  const [info, setInfo] = React.useState(props.route.params);
-  React.useEffect(() => {
-    // console.log({ props })
-    setInfo(props.route.params);
-  }, [props.route.params]);
-
+  const [location, setLocation] = React.useState(null);
   const [modal, setModal] = React.useState({ title: "Em desenvolvimento", desc: "Esta função que você tentou acessar ainda está em desenvolvimento" });
 
   const [classes, setClasses] = React.useState([
@@ -81,6 +69,61 @@ const Home = (props) => {
     { id: 6, position: "6º", title: "João da Silva", points: 600 },
   ]);
 
+  const getCurrentPosition = async () => {
+
+    let { status } = await Location.requestPermissionsAsync();
+    if (status !== 'granted') {
+      console.log('Permission to access location was denied');
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    console.log(location)
+    setLocation(location);
+
+  }
+
+  const [searchText, setSearchText] = React.useState('');
+  const [timer, setTimer] = React.useState(0);
+
+  const searchLocal = async (textToSearch) => {
+    alert(textToSearch)
+  }
+
+  const txtFill = (txt) => {
+    console.log('on txt fill')
+    let delay = 3000;
+    console.log({delay})
+    let now = new Date().getTime();
+    console.log({now})
+    console.log({timer})
+    if (timer && (now - timer) < delay) { //o tempo é menor
+      console.log(timer, now, delay)
+    } else { // o tempo é maior
+      setTimer(now);
+      console.log(txt)
+      setSearchText(txt)
+    }
+    // if (timer > now) { console.log(timer, now) }
+    // else { console.log(timer, now) }
+    // clearTimeout(timer);
+    // setTimeout(searchLocal(txt), 2000);
+  }
+
+
+  React.useEffect(() => {
+    // console.log(props.user)
+    // console.log(props.classes)
+    // console.log(props.consultations)
+    props.classes.map(c => {
+      // console.log('id: ', c.id, ' day: ', (c.date).getDate())
+      // console.log('id: ', c.id, ' month: ', functions.getMonthName((c.date).getMonth()))
+    })
+
+    getCurrentPosition();
+
+  }, []);
+
   return (
     <Styled.Container style={{ paddingTop: 0, backgroundColor: '#fff' }}>
       <Header screenTitle="Home" client navigation={props.navigation} />
@@ -88,24 +131,72 @@ const Home = (props) => {
       {/* <Styled.Scroll> */}
       <Styled.ScrollContainer>
         <Styled.SectionTitle style={{ width: '90%' }}>Próximas aulas</Styled.SectionTitle>
-        <ImageBackground source={map} style={{ width: '100%', height: Dimensions.get('window').height - 160, alignItems: 'center', justifyContent: 'flex-start', }}>
+
+
+
+
+        {/* <ImageBackground source={map} style={{ width: '100%', height: Dimensions.get('window').height - 160, alignItems: 'center', justifyContent: 'flex-start', }}> */}
+        <View style={{ width: '100%', height: Dimensions.get('window').height - 160, alignItems: 'center', justifyContent: 'flex-end', }}>
+
+
+
+          {location && <View style={StyleSheet.absoluteFillObject}>
+
+            <MapView
+              initialRegion={{
+                latitude: location.coords.latitude || 37.4219312,
+                longitude: location.coords.longitude || -122.0840363,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+
+              style={StyleSheet.absoluteFillObject}
+            >
+              <Marker
+                coordinate={{ latitude: location.coords.latitude || 37.4219312, longitude: location.coords.longitude || -122.0840363 }}
+                title={'Aluna X'}
+                description={'Aluna X - 2 aulas'}
+                icon={pic}
+                style={{}}
+              />
+
+              <View style={{ position: 'absolute', top: 100, left: 50 }} />
+            </MapView>
+
+          </View>}
+
+
+
+
+
           <Styled.ScrollHorizontal style={{ height: 50 }} contentContainerStyle={{ alignItems: 'flex-start', justifyContent: 'flex-start' }}>
-            {classes && classes.map(c => {
+            {/* {classes && classes.map(c => {
               return (
                 <Styled.ClassBoxCircleContainer onPress={() => props.navigation.navigate('Confirmation')} style={{ backgroundColor: c.color }} key={c.id}>
                   <Styled.ClassBoxCircleDay>{c.day}</Styled.ClassBoxCircleDay>
                   <Styled.ClassBoxCircleMonth>{c.month}</Styled.ClassBoxCircleMonth>
                 </Styled.ClassBoxCircleContainer>
               );
+            })} */}
+            {props.classes && props.classes.map((c, index, arr) => {
+              let opacity = (((arr.length - (index + 1)) / arr.length) + (1 / arr.length));
+              console.log({ opacity })
+              return (
+                <Styled.ClassBoxCircleContainer onPress={() => {
+                  console.log({ c })
+                  props.setCurrentClass(c) && props.navigation.navigate('Confirmation')
+                }
+                }
+
+                  activeOpacity={0.7}
+                  style={{ backgroundColor: 'rgba(196, 58, 87, ' + opacity + ')' }} key={c.id}>
+                  {/* // style={{ backgroundColor: 'rgba(196, 58, 87,1)' }} key={c.id}> */}
+                  <Styled.ClassBoxCircleDay>{(c.date).getDate()}</Styled.ClassBoxCircleDay>
+                  <Styled.ClassBoxCircleMonth>{functions.getMonthName((c.date).getMonth())}</Styled.ClassBoxCircleMonth>
+                </Styled.ClassBoxCircleContainer>
+              );
             })}
           </Styled.ScrollHorizontal>
-          {/* <Styled.SectionContainer style={{ width: '100%' }}> */}
-          {/* <MapView style={{ height: 400, width: '100%', alignItems: 'center', justifyContent: 'flex-end' }}>*/}
-
-
-          {/* </Styled.SectionContainer> */}
-
-          {/* </MapView> */}
           <View style={{ flex: 2 }} />
           <View style={{ flex: 2 }} />
           <View style={{ flex: 3 }} />
@@ -117,7 +208,7 @@ const Home = (props) => {
               <Styled.Illustration source={dotCircle} style={{ width: 20, height: 20, marginRight: 3 }} />
               <Styled.SectionTitle style={{ textAlign: 'left', fontWeight: 'bold', fontSize: 16, width: '100%', margin: 0 }}>Onde nos encontramos?</Styled.SectionTitle>
             </View>
-            <Styled.TxtInput style={{ width: '90%', margin: 0, fontSize: 14 }} placeholder="Digite o local aqui..." />
+            <Styled.TxtInput style={{ width: '90%', margin: 0, fontSize: 14 }} value={searchText} onChangeText={(e) => txtFill(e)} placeholder="Digite o local aqui..." />
           </View>
 
           <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '90%', marginVertical: 3, marginHorizontal: 0, borderRadius: 10, backgroundColor: "#fff", padding: 10, alignItems: 'center', justifyContent: 'space-between' }}>
@@ -136,7 +227,30 @@ const Home = (props) => {
             <Styled.TxtBtnCTA2>AGENDAR</Styled.TxtBtnCTA2>
           </Styled.BtnCTA2>
 
-        </ImageBackground>
+
+
+
+
+
+
+
+
+
+
+          {/* </ImageBackground> */}
+
+
+
+
+
+
+
+        </View>
+
+
+
+
+
 
 
         {/* </Styled.Scroll> */}
@@ -151,6 +265,15 @@ const mapStateToProps = (state) => {
   return {
     //modal
     modalInfoVisible: state.modalReducer.modalInfoVisible,
+
+    //user 
+    user: state.userReducer,
+
+    //classes
+    classes: state.classReducer.classes,
+
+    //consultations
+    consultations: state.consultationReducer.consultations,
   }
 };
 
@@ -158,6 +281,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     //modal
     setModalInfoVisible: (modalInfoVisible) => dispatch({ type: 'SET_MODAL_INFO_VISIBLE', payload: { modalInfoVisible } }),
+    //class
+    setCurrentClass: (currentClass) => dispatch({ type: 'SET_CURRENT_CLASS', payload: { currentClass } }),
+    //consultation
+    setCurrentConsultation: (currentConsultation) => dispatch({ type: 'SET_CURRENT_CONSULTATION', payload: { currentConsultation } }),
   }
 };
 

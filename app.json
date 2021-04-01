@@ -9,10 +9,10 @@
       "**/*"
     ],
     "android": {
-      "package": "com.devmulheresnotransito.mulheresnotransito"
+      "package": "com.rria.mulheresnotransito"
     },
     "ios": {
-      "bundleIdentifier": "com.devmulheresnotransito.mulheresnotransito"
+      "bundleIdentifier": "com.rria.mulheresnotransito"
     }
   }
 }

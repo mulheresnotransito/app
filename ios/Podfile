@@ -1,8 +1,11 @@
+#source 'https://cdn.cocoapods.org/'
+#source 'https://cocoapods-cdn.netlify.app/'
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 platform :ios, '10.0'
+source 'https://github.com/CocoaPods/Specs.git'
 
 target 'mulheresnotransito' do
   use_unimodules!

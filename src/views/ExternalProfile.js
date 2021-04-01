@@ -29,6 +29,8 @@ import * as Styled from '../assets/styles/styled';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
+import * as functions from '../services/functions.service';
+
 const ExternalProfile = (props) => {
 
   const [btnActive, setBtnActive] = React.useState('next-hours');
@@ -49,8 +51,6 @@ const ExternalProfile = (props) => {
     { id: 5, day: '01', month: 'novembro', title: 'aula prática', description: 'início: 19:30', place: 'R. do Exemplo' },
   ]);
 
-
-
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
       <Header screenTitle="Home" navigation={props.navigation} />
@@ -60,7 +60,7 @@ const ExternalProfile = (props) => {
         <View style={{ alignItems: 'center', justifyContent: 'center', width: '95%', marginVertical: 10, flexDirection: 'row', flexWrap: 'nowrap', marginBottom: -30 }}>
           <Styled.Logo source={profilePic} />
           <View style={{ marginHorizontal: 15, flex: 1 }}>
-            <Text style={{ fontWeight: '600', fontSize: 18, color: "#C43A57" }}>Manuela Riviera</Text>
+            <Text style={{ fontWeight: '600', fontSize: 18, color: "#C43A57" }}>{props.user.first_name + ' ' + props.user.last_name}</Text>
             <TouchableOpacity onPress={() => props.navigation.navigate('ProfileEdit')} style={{ width: 100, padding: 3, marginVertical: 1, backgroundColor: '#C43A57', borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
               <Text style={{ fontWeight: '500', fontSize: 12, color: "#fff" }}>Editar perfil</Text>
             </TouchableOpacity>
@@ -77,7 +77,7 @@ const ExternalProfile = (props) => {
         </View>
 
         <View style={{ width: '95%' }}>
-          {(btnActive == 'next-hours' && nextHours) && nextHours.map(nextHour => {
+          {/* {(btnActive == 'next-hours' && nextHours) && nextHours.map(nextHour => {
             return (
               <TouchableOpacity key={nextHour.id} style={{ flexDirection: 'row', flexWrap: 'nowrap', backgroundColor: '#fff', marginVertical: 5, borderWidth: 1, borderRadius: 10, borderColor: '#F4F4F4' }}>
                 <View style={{ borderTopLeftRadius: 10, borderBottomLeftRadius: 10, backgroundColor: '#FFEBF1', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 5, width: 75 }}>
@@ -95,8 +95,32 @@ const ExternalProfile = (props) => {
                 </View>
               </TouchableOpacity>
             );
+          })} */}
+          {(btnActive == 'next-hours' && props.classes) && props.classes.map(nextHour => {
+
+            nextHour.date = new Date(nextHour.date);
+
+            if (nextHour.date > new Date())
+
+              return (
+                <TouchableOpacity key={nextHour.id} style={{ flexDirection: 'row', flexWrap: 'nowrap', backgroundColor: '#fff', marginVertical: 5, borderWidth: 1, borderRadius: 10, borderColor: '#F4F4F4' }}>
+                  <View style={{ borderTopLeftRadius: 10, borderBottomLeftRadius: 10, backgroundColor: '#FFEBF1', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 5, width: 75 }}>
+                    <Text style={{ fontWeight: '700', fontSize: 30, color: "#C43A57", flex: 1 }}>{(nextHour.date).getDate()}</Text>
+                    <Text style={{ fontWeight: '400', fontSize: 12, color: "#C43A57", flex: 1 }}>{functions.getFullMonthName((nextHour.date).getMonth())}</Text>
+                  </View>
+                  <View style={{ borderTopRightRadius: 10, borderBottomRightRadius: 10, backgroundColor: '#FFFFFF', alignItems: 'flex-start', justifyContent: 'center', flex: 1, paddingLeft: 10 }}>
+                    <View style={{ flexDirection: 'row', flexWrap: 'nowrap' }}>
+                      {nextHour.type == "lesson" && <Styled.Illustration source={car} style={{ width: 15, height: 11.25, marginHorizontal: 1 }} />}
+                      {nextHour.type == "consultation" && <Styled.Illustration source={heartbeat} style={{ width: 15, height: 13.12, marginHorizontal: 1 }} />}
+                      <Text style={{ fontWeight: '400', fontSize: 13, color: "#C43A57", marginBottom: 0 }}>{nextHour.type == "lesson" ? 'aula prática' : 'sessão psicológica'}</Text>
+                    </View>
+                    <Text style={{ fontWeight: '600', fontSize: 13, color: "#C43A57", marginBottom: 0, overflow: 'hidden', }}>{nextHour.starting_point.length > 25 ? (nextHour.starting_point).substr(0, 25) + "..." : nextHour.starting_point}</Text>
+                    <Text style={{ fontWeight: '400', fontSize: 13, color: "#C43A57", }}>início: {(nextHour.date).getHours() + ':' + (nextHour.date).getMinutes()}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
           })}
-          {(btnActive == 'history' && history) && history.map(h => {
+          {/* {(btnActive == 'history' && history) && history.map(h => {
             return (
               <TouchableOpacity key={h.id} style={{ flexDirection: 'row', flexWrap: 'nowrap', backgroundColor: '#fff', marginVertical: 5, borderWidth: 1, borderRadius: 10, borderColor: '#F4F4F4' }}>
                 <View style={{ borderTopLeftRadius: 10, borderBottomLeftRadius: 10, backgroundColor: '#FFEBF1', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 5, width: 75 }}>
@@ -114,6 +138,30 @@ const ExternalProfile = (props) => {
                 </View>
               </TouchableOpacity>
             );
+          })} */}
+          {(btnActive == 'history' && props.classes) && props.classes.map(nextHour => {
+
+            nextHour.date = new Date(nextHour.date);
+
+            if (nextHour.date < new Date())
+
+              return (
+                <TouchableOpacity key={nextHour.id} style={{ flexDirection: 'row', flexWrap: 'nowrap', backgroundColor: '#fff', marginVertical: 5, borderWidth: 1, borderRadius: 10, borderColor: '#F4F4F4' }}>
+                  <View style={{ borderTopLeftRadius: 10, borderBottomLeftRadius: 10, backgroundColor: '#FFEBF1', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 5, width: 75 }}>
+                    <Text style={{ fontWeight: '700', fontSize: 30, color: "#C43A57", flex: 1 }}>{(nextHour.date).getDate()}</Text>
+                    <Text style={{ fontWeight: '400', fontSize: 12, color: "#C43A57", flex: 1 }}>{functions.getFullMonthName((nextHour.date).getMonth())}</Text>
+                  </View>
+                  <View style={{ borderTopRightRadius: 10, borderBottomRightRadius: 10, backgroundColor: '#FFFFFF', alignItems: 'flex-start', justifyContent: 'center', flex: 1, paddingLeft: 10 }}>
+                    <View style={{ flexDirection: 'row', flexWrap: 'nowrap' }}>
+                      {nextHour.type == "lesson" && <Styled.Illustration source={car} style={{ width: 15, height: 11.25, marginHorizontal: 1 }} />}
+                      {nextHour.type == "consultation" && <Styled.Illustration source={heartbeat} style={{ width: 15, height: 13.12, marginHorizontal: 1 }} />}
+                      <Text style={{ fontWeight: '400', fontSize: 13, color: "#C43A57", marginBottom: 0 }}>{nextHour.type == "lesson" ? 'aula prática' : 'sessão psicológica'}</Text>
+                    </View>
+                    <Text style={{ fontWeight: '600', fontSize: 13, color: "#C43A57", marginBottom: 0, overflow: 'hidden', }}>{nextHour.starting_point.length > 25 ? (nextHour.starting_point).substr(0, 25) + "..." : nextHour.starting_point}</Text>
+                    <Text style={{ fontWeight: '400', fontSize: 13, color: "#C43A57", }}>início: {(nextHour.date).getHours() + ':' + (nextHour.date).getMinutes()}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
           })}
         </View>
 
@@ -127,6 +175,15 @@ const mapStateToProps = (state) => {
   return {
     //modal
     modalInfoVisible: state.modalReducer.modalInfoVisible,
+
+    //user 
+    user: state.userReducer,
+
+    //classes
+    classes: state.classReducer.classes,
+
+    //consultations
+    consultations: state.consultationReducer.consultations,
   }
 };
 

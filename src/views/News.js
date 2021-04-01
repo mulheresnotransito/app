@@ -35,7 +35,7 @@ const News = (props) => {
       <Header screenTitle="Home" client navigation={props.navigation} />
 
       <Styled.ScrollContainer>
-        <Styled.TxtQuestion style={{ marginTop: 10, marginBottom: 20 }}>Matérias</Styled.TxtQuestion>
+        <Styled.TxtNewsTitle>Matérias</Styled.TxtNewsTitle>
 
         <Styled.TxtQuestion style={{ textAlign: 'left', marginVertical: 5, fontSize: 14, width: '95%' }}>5 invenções criadas por mulheres, que fazem parte
 do seu dia a dia e você provavelmente não sabia!</Styled.TxtQuestion>

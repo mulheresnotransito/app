@@ -370,8 +370,8 @@ export const AdImg = styled.Image`
   height: 100px;
 `;
 export const Logo = styled.Image`
-  width: ${props => 383 * 0.3 + "px"};
-  height: ${props => 391 * 0.3 + "px"};
+  width: ${props => 608 * 0.3 + "px"};
+  height: ${props => 165 * 0.3 + "px"};
 `;
 export const Illustration = styled.Image`
   width: ${props => 1125 * 0.3 + "px"};
@@ -497,9 +497,10 @@ export const ClassBoxCircleContainer = styled.TouchableOpacity`
   justify-content: center;
   background-color: #C43A57;
   border-radius: 50px;
-  border: 2px solid #efefef;
+  /* border: 2px solid #efefef; */
   width: 75px;
   height: 75px;
+  /* opacity: 1; */
 `;
 
 export const ClassBoxCircleDay = styled.Text`
@@ -689,6 +690,19 @@ export const TxtQuestion = styled.Text`
   color: #C43A57;
   text-align: center;
   width: 100%;
+`;
+
+export const TxtNewsTitle = styled.Text`
+  font-size: 16px;
+  font-weight: 700;
+  background-color: #C43A57;
+  color: #efefef;
+  text-align: center;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-top: 7px;
+  padding-bottom: 7px;
 `;
 
 

@@ -39,33 +39,33 @@ const ProfileEdit = (props) => {
           <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '95%', justifyContent: 'center', alignItems: 'space-between', marginVertical: 20 }}>
             <View style={{ flex: 1 }} >
               <Text style={{ marginHorizontal: 10, fontSize: 12, color: '#C96786', fontWeight: '400' }}>Nome</Text>
-              <Styled.TxtInput1 placeholder="Nome" value="Manuela" style={{ color: '#E46788' }} />
+              <Styled.TxtInput1 placeholder="Nome" value={props.user.first_name} style={{ color: '#E46788' }} />
             </View>
             <View style={{ flex: 1 }} >
               <Text style={{ marginHorizontal: 10, fontSize: 12, color: '#C96786', fontWeight: '400' }}>Sobrenome</Text>
-              <Styled.TxtInput1 placeholder="Sobrenome" value="Riviera" style={{ color: '#E46788' }} />
+              <Styled.TxtInput1 placeholder="Sobrenome" value={props.user.last_name} style={{ color: '#E46788' }} />
             </View>
           </View>
 
           <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '95%', justifyContent: 'center', alignItems: 'space-between', marginVertical: 20 }}>
             <View style={{ flex: 1 }} >
               <Text style={{ marginHorizontal: 10, fontSize: 12, color: '#C96786', fontWeight: '400' }}>Data de nascimento</Text>
-              <Styled.TxtInput1 placeholder="DD/MM/AAAA" value="14/05/1998" style={{ color: '#E46788' }} />
+              <Styled.TxtInput1 placeholder="DD/MM/AAAA" value={props.user.birthday} style={{ color: '#E46788' }} />
             </View>
             <View style={{ flex: 1 }} >
               <Text style={{ marginHorizontal: 10, fontSize: 12, color: '#C96786', fontWeight: '400' }}>Sexo</Text>
-              <Styled.TxtInput1 placeholder="Sexo" value="Feminino" style={{ color: '#E46788' }} />
+              <Styled.TxtInput1 placeholder="Sexo" value={props.user.sex} style={{ color: '#E46788' }} />
             </View>
           </View>
 
           <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '95%', justifyContent: 'center', alignItems: 'space-between', marginVertical: 20 }}>
             <View style={{ flex: 1 }} >
               <Text style={{ marginHorizontal: 10, fontSize: 12, color: '#C96786', fontWeight: '400' }}>Língua</Text>
-              <Styled.TxtInput1 placeholder="Língua" value="Portuguesa" style={{ color: '#E46788' }} />
+              <Styled.TxtInput1 placeholder="Língua" value={props.user.language} style={{ color: '#E46788' }} />
             </View>
             <View style={{ flex: 1 }} >
               <Text style={{ marginHorizontal: 10, fontSize: 12, color: '#C96786', fontWeight: '400' }}>País</Text>
-              <Styled.TxtInput1 placeholder="País" value="Brasil" style={{ color: '#E46788' }} />
+              <Styled.TxtInput1 placeholder="País" value={props.user.country} style={{ color: '#E46788' }} />
             </View>
           </View>
 
@@ -76,7 +76,7 @@ const ProfileEdit = (props) => {
             </View>
             <View style={{ flex: 1 }} >
               <Text style={{ marginHorizontal: 10, fontSize: 12, color: '#C96786', fontWeight: '400' }}>Mudar e-mail</Text>
-              <Styled.TxtInput1 placeholder="E-mail" value="manu@gmail.com" style={{ color: '#E46788' }} />
+              <Styled.TxtInput1 placeholder="E-mail" value={props.user.email} style={{ color: '#E46788' }} />
             </View>
           </View>
 
@@ -97,6 +97,8 @@ const mapStateToProps = (state) => {
   return {
     //modal
     modalInfoVisible: state.modalReducer.modalInfoVisible,
+    //user
+    user: state.userReducer,
   }
 };
 

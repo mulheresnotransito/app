@@ -7,7 +7,8 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -25,7 +26,43 @@ import * as Styled from '../assets/styles/styled';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
+import * as functions from '../services/functions.service';
+
 const Confirmation = (props) => {
+
+  const [date, setDate] = React.useState(new Date(props.currentClass.date));
+  const [driverName, setDriverName] = React.useState(props.currentClass.first_name + ' ' + props.currentClass.last_name);
+  const [car, setCar] = React.useState({
+    model: props.currentClass.car_model, brand: props.currentClass.car_brand, license_plate: props.currentClass.car_license_plate
+  });
+  const [startingPoint, setStartingPoint] = React.useState(props.currentClass.starting_point);
+
+  const [isLoadingDate, setIsLoadingDate] = React.useState(true);
+  const [isLoadingDriver, setIsLoadingDriver] = React.useState(true);
+  const [isLoadingCar, setIsLoadingCar] = React.useState(true);
+  const [isLoadingStartingPoint, setIsLoadingStartingPoint] = React.useState(true);
+
+  React.useEffect(() => {
+    setIsLoadingDate(true);
+    setIsLoadingDriver(true);
+    setIsLoadingCar(true);
+    setIsLoadingStartingPoint(true);
+
+    setDate(new Date(props.currentClass.date));
+    setIsLoadingDate(false);
+
+    setDriverName(props.currentClass.first_name + ' ' + props.currentClass.last_name);
+    setIsLoadingDriver(false);
+
+    setCar({
+      model: props.currentClass.car_model, brand: props.currentClass.car_brand, license_plate: props.currentClass.car_license_plate
+    });
+    setIsLoadingCar(false);
+
+    setStartingPoint(props.currentClass.starting_point);
+    setIsLoadingStartingPoint(false);
+
+  }, [props.currentClass]);
 
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
@@ -38,23 +75,35 @@ const Confirmation = (props) => {
           <Styled.TxtQuestion style={{ color: "#FFF", width: '35%', marginTop: 10 }}>Aula marcada com sucesso!</Styled.TxtQuestion>
         </View>
 
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff', width: '100%', paddingVertical: 20 }}>
-          <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 90, marginBottom: -16 }}>18:00</Styled.TxtQuestion>
-          <Styled.TxtQuestion style={{ color: "#C43A57", }}>Quarta-Feira, 14 de Outubro</Styled.TxtQuestion>
-        </View>
+        {!isLoadingDate &&
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff', width: '100%', paddingVertical: 20 }}>
+            <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 90, marginBottom: -16 }}>{date.getHours() + ":" + date.getMinutes()}</Styled.TxtQuestion>
+            <Styled.TxtQuestion style={{ color: "#C43A57", }}>{functions.getFullDayName(date.getDay())}, {date.getDate()} de {functions.getFullMonthName(date.getMonth())}</Styled.TxtQuestion>
+          </View>
+        }
+        {isLoadingDate &&
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff', width: '100%', paddingVertical: 20 }}>
+            <ActivityIndicator size="large" color="#C43A57" />
+          </View>}
 
         <View style={{ flexDirection: 'row', flexWrap: 'nowrap', flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFEBF1', width: '100%', paddingVertical: 20 }}>
           <Styled.Illustration source={profilePic} style={{ width: 100, height: 100, marginHorizontal: 3 }} />
-          <View style={{ alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 10 }}>
-            <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 16, fontWeight: '600', textAlign: 'left' }}>Maria Saramalho</Styled.TxtQuestion>
-            <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 16, fontWeight: '300', textAlign: 'left' }}>Hb20 (Hyundai)</Styled.TxtQuestion>
-            <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 16, fontWeight: '300', textAlign: 'left' }}>Placa: AAA-2020</Styled.TxtQuestion>
-
-            <TouchableOpacity style={{ padding: 5, backgroundColor: "#C43A57", flexDirection: 'row', flexWrap: 'nowrap', borderRadius: 50 }}>
-              <Styled.Illustration source={whatsapp} style={{ width: 16, height: 16, marginRight: 3 }} />
-              <Styled.TxtBtnCTA color="#fff" style={{ fontSize: 12 }}>Enviar mensagem</Styled.TxtBtnCTA>
-            </TouchableOpacity>
-          </View>
+          {(isLoadingDriver || isLoadingCar) &&
+            <View style={{ alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 10 }}>
+              <ActivityIndicator size="large" color="#C43A57" />
+            </View>
+          }
+          {(!isLoadingDriver && !isLoadingCar) &&
+            <View style={{ alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 10 }}>
+              <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 16, fontWeight: '600', textAlign: 'left' }}>{driverName}</Styled.TxtQuestion>
+              <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 16, fontWeight: '300', textAlign: 'left' }}>{car.model} ({car.brand})</Styled.TxtQuestion>
+              <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 16, fontWeight: '300', textAlign: 'left' }}>Placa: {car.license_plate}</Styled.TxtQuestion>
+              <TouchableOpacity style={{ padding: 5, backgroundColor: "#C43A57", flexDirection: 'row', flexWrap: 'nowrap', borderRadius: 50 }}>
+                <Styled.Illustration source={whatsapp} style={{ width: 16, height: 16, marginRight: 3 }} />
+                <Styled.TxtBtnCTA color="#fff" style={{ fontSize: 12 }}>Enviar mensagem</Styled.TxtBtnCTA>
+              </TouchableOpacity>
+            </View>
+          }
         </View>
 
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff', width: '100%', paddingVertical: 20 }}>
@@ -63,7 +112,12 @@ const Confirmation = (props) => {
               <Styled.Illustration source={dotCircle} style={{ width: 20, height: 20, marginRight: 3 }} />
               <Styled.SectionTitle style={{ textAlign: 'left', fontWeight: 'bold', fontSize: 16, width: '100%', margin: 0 }}>Ponto de partida</Styled.SectionTitle>
             </View>
-            <Styled.TxtInput style={{ width: '100%', margin: 0, fontSize: 14 }} placeholder="Rua do exemplo, esquina da Luz - 4777" editable={false} />
+            {!isLoadingStartingPoint &&
+              <Styled.TxtInput style={{ width: '100%', margin: 0, fontSize: 14 }} placeholder={startingPoint} editable={false} />
+            }
+            {isLoadingStartingPoint &&
+              <ActivityIndicator size="large" color="#C43A57" />
+            }
           </Styled.SectionContainer>
         </View>
 
@@ -81,6 +135,8 @@ const mapStateToProps = (state) => {
   return {
     //modal
     modalInfoVisible: state.modalReducer.modalInfoVisible,
+    //class
+    currentClass: state.classReducer.currentClass,
   }
 };
 
