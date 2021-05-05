@@ -19,6 +19,7 @@ const initialState = {
   isLoading: false,
   currentScreen: false,
   isLogin: false,
+  profile_photo: '',
   screenTitle: "Home",
 };
 
@@ -44,6 +45,7 @@ export default (state = initialState, action) => {
         consultations_credits: action.payload.consultations_credits,
         signature_status: action.payload.signature_status,
         signature_expiration_date: action.payload.signature_expiration_date,
+        profile_photo: action.payload.profile_photo,
       };
       break;
     case 'LOGOUT':

@@ -2,17 +2,28 @@
   "name": "mulheres-no-transito",
   "displayName": "mulheres-no-transito",
   "expo": {
-    "name": "mulheres-no-transito",
+    "name": "Mulheres no Trânsito",
     "slug": "mulheres-no-transito",
     "version": "1.0.0",
+    "icon": "./src/assets/images/iconv1.png",
+    "splash": {
+      "image": "./src/assets/images/splashscreenv1.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E5315C"
+    },
     "assetBundlePatterns": [
       "**/*"
     ],
     "android": {
-      "package": "com.rria.mulheresnotransito"
+      "package": "com.rria.mulheresnotransito.android"
     },
     "ios": {
-      "bundleIdentifier": "com.rria.mulheresnotransito"
+      "bundleIdentifier": "com.rria.mulheresnotransito.ios",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to allow users to send photos for processing orders. Your photos wont be shared without your permission",
+        "NSMicrophoneUsageDescription": "This app uses the microphone to allow users to send orders via voice message.",
+        "NSPhotoLibraryUsageDescription": "This app uses the camera to allow users to send photos for processing orders. Your photos wont be shared without your permission"
+      }
     }
   }
 }

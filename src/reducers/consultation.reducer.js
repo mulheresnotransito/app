@@ -1,6 +1,7 @@
 const initialState = {
   consultations: [],
-  currentConsultation: {}
+  currentConsultation: {},
+  newConsultation: {}
 };
 
 export default (state = initialState, action) => {
@@ -11,6 +12,9 @@ export default (state = initialState, action) => {
       break;
     case 'SET_CURRENT_CONSULTATION':
       return { ...state, currentConsultation: action.payload.currentConsultation };
+      break;
+    case 'SET_NEW_CONSULTATION':
+      return { ...state, newConsultation: action.payload.newConsultation };
       break;
     case 'RESET_CONSULTATIONS':
       return { ...state, consultations: [] };

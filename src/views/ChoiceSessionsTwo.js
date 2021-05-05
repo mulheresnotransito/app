@@ -14,6 +14,8 @@ import {
   Dimensions
 } from 'react-native';
 
+import { Calendar, LocaleConfig } from 'react-native-calendars';
+
 import { connect } from 'react-redux';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -28,23 +30,19 @@ import Footer from '../components/Footer';
 
 import * as functions from '../services/functions.service';
 
-const ChoiceSessions = (props) => {
+LocaleConfig.locales['br'] = {
+  monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+  monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+  dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+  dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
+  today: 'Hoje'
+};
+LocaleConfig.defaultLocale = 'br';
+
+const ChoiceSessionsTwo = (props) => {
 
   const [modalIsVisible, setModalIsVisible] = React.useState(false);
   const [clickedSession, setClickedSession] = React.useState({});
-
-  const [userToLogin, setUserToLogin] = React.useState({
-    email: '',
-    password: ''
-  });
-
-  const loginUser = (user) => {
-    // if(user.email == 'teste@hinoselouvores.com' && user.password == '123456')
-    //   navigation.navigate('Home');
-    // else
-    //   Alert.alert('Erro', 'Usuário ou senha incorretos');
-    props.navigation.navigate('Market');
-  }
 
   const [info, setInfo] = React.useState(props.route.params);
   React.useEffect(() => {
@@ -52,41 +50,19 @@ const ChoiceSessions = (props) => {
     setInfo(props.route.params);
   }, [props.route.params]);
 
+
+  const [test, setTest] = React.useState({});
   const [psychologists, setPsychologists] = React.useState([
-    { id: 1, name: 'Joana' },
-    { id: 2, name: 'Pietra' },
-    { id: 3, name: 'Thifany' },
-    { id: 4, name: 'Márcia Albuquerque' },
-    { id: 5, name: 'Mércia Mattos' },
-    { id: 6, name: 'Flávia Marques' },
-    { id: 7, name: 'Pietra Arruda' },
-    { id: 8, name: 'Marcela Gadelha' },
-    { id: 9, name: "Joana D'Arc" },
-    { id: 10, name: 'Maria Marques' },
-    { id: 11, name: 'Joana Arruda' },
+    { id: 1, name: 'Caio' },
+    { id: 2, name: 'Caue' },
+    { id: 3, name: 'Joao' },
   ]);
 
-  const [filtered, setFiltered] = React.useState([]);
-
   const handleSearchFilter = (text) => {
-    setFiltered(psychologists)
     let temp = psychologists;
     temp = temp.filter(item => item.name.includes(text));
-    setFiltered(temp);
     console.log({ temp })
   }
-  const handleFormatText = (text) => {
-    return text.length <= 20 ? text : text.substr(0, 20) + "..."
-  }
-  const [selectedPsycho, setSelectedPsycho] = React.useState({ id: '', name: '' });
-  const handleSelectPsycho = (psy) => {
-    setSelectedPsycho(psy);
-    props.navigation.navigate("ChoiceSessionsTwo");
-  };
-
-  React.useEffect(() => {
-    setFiltered(psychologists)
-  }, []);
 
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
@@ -121,6 +97,7 @@ const ChoiceSessions = (props) => {
         </View>
       </Modal>
 
+      {/* <Styled.Scroll> */}
       <Styled.ScrollContainer>
         <Styled.SectionTitle style={{ width: '90%' }}>{props.consultations?.length > 0 ? "Próximas sessões" : "Agende uma sessão"}</Styled.SectionTitle>
         {/* <Styled.TxtQuestion style={{ fontSize: 18, fontWeight: '400', width: '90%', textAlign: 'left' }}>Próximas sessões</Styled.TxtQuestion> */}
@@ -148,29 +125,55 @@ const ChoiceSessions = (props) => {
           })}
         </Styled.ScrollHorizontal>
 
-        <Styled.TxtQuestion style={{ fontSize: 18, fontWeight: '600', width: '90%', textAlign: 'center' }}>Escolha uma psicóloga</Styled.TxtQuestion>
-        <Styled.SearchBar placeholder="Pesquisar..." onChangeText={handleSearchFilter} />
+        <Styled.TxtQuestion style={{ fontSize: 18, fontWeight: '600', width: '90%', textAlign: 'center' }}>Escolha uma data</Styled.TxtQuestion>
+        
+        <View style={{ backgroundColor: 'gray', width: '100%', marginBottom: 10 }}>
 
-        <Styled.List>
+          <Calendar
+            style={{ width: '100%', paddingVertical: 5 }}
+            hideExtraDays={true}
+            key="br"
+            
+            dayComponent={({ date, state }) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => {
+                    let atualDate = functions.getFormattedDate(new Date(), "-")
+                    if (atualDate <= date.dateString) setTest(date);
+                  }}
 
-          {filtered && filtered.map(p => {
-            return (
-              <Styled.ListItem onPress={() => handleSelectPsycho(p)} key={p.id}>
-                <Styled.ListPhoto source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fG' }} />
-                <Styled.ListTitle>{handleFormatText(p.name)}</Styled.ListTitle>
-              </Styled.ListItem>
-            );
+                  style={{
+                    backgroundColor: test.dateString == date.dateString ? "#C43A57" : "#FFEBF1",
+                    paddingHorizontal: 1, paddingVertical: 5, borderRadius: 10, borderWidth: 3,
+                    borderColor: '#fff', alignItems: 'center', justifyContent: 'center', width: 64
+                  }}
+                >
+                  <Text
+                    style={{ color: test.dateString == date.dateString ? "#FFEBF1" : "#C43A57", fontSize: 30, fontWeight: '800', marginBottom: -5 }}
+                  >
+                    {date.day}
+                  </Text>
+                </TouchableOpacity>
+              );
+            }}
 
-          })}
-          {(filtered && filtered?.lenght == 0) &&
+            markedDates={{
+              test: { marked: true }
+            }}
+          />
 
-            <TouchableOpacity>
-              <Text>Nenhuma psicóloga encontrada :(</Text>
-            </TouchableOpacity>
-          }
+        </View>
 
-        </Styled.List>
 
+
+        <Styled.TxtQuestion style={{ width: '90%', fontWeight: '500', fontSize: 14, color: "#E59EB6" }}>Obs: datas não disponíveis não aparecerão nessa tela</Styled.TxtQuestion>
+        <Styled.BtnCTA2 onPress={() => props.navigation.navigate('ChoicePsychologistHour')} style={{ borderRadius: 50 }}>
+          <Styled.TxtBtnCTA2>ESCOLHER HORÁRIO</Styled.TxtBtnCTA2>
+        </Styled.BtnCTA2>
+
+
+
+        {/* </Styled.Scroll> */}
       </Styled.ScrollContainer>
       <Footer screenTitle="Home" client navigation={props.navigation} />
     </Styled.Container >
@@ -239,4 +242,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChoiceSessions);
+export default connect(mapStateToProps, mapDispatchToProps)(ChoiceSessionsTwo);

@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 // import { Ionicons } from '@expo/vector-icons';
 import { Ionicons } from 'react-native-vector-icons';
 
-import logo from '../assets/images/logo-2.png';
+//
 import creditCard from '../assets/icons/credit-card.png';
 
 import * as Styled from '../assets/styles/styled';

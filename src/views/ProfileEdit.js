@@ -24,12 +24,18 @@ const ProfileEdit = (props) => {
 
   const [modal, setModal] = React.useState({ title: "Em desenvolvimento", desc: "Esta função que você tentou acessar ainda está em desenvolvimento" });
 
+  React.useEffect(() => {
+    console.log(props.user)
+  }, []);
+
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
       <ModalInfo title={modal.title} description={modal.desc} />
       <Header screenTitle="Home" client psychologist navigation={props.navigation} />
       <Styled.ScrollContainer>
-        <Styled.Logo source={profilePic} />
+        {/* {props?.user?.profile_photo && <Styled.ProfileImage2 source={props?.user?.profile_photo && profilePic} />} */}
+        {props?.user?.profile_photo && <Styled.ProfileImage2 source={{ uri: props?.user?.profile_photo }} />}
+        {/* {!props?.user?.profile_photo && <Styled.ProfileImage2 source={profilePic} />} */}
         <Styled.BtnSub>
           <Styled.TxtBtnSub>Trocar foto de perfil</Styled.TxtBtnSub>
         </Styled.BtnSub>
@@ -83,7 +89,7 @@ const ProfileEdit = (props) => {
           <Styled.BtnSub>
             <Styled.TxtBtnSub>Excluir conta</Styled.TxtBtnSub>
           </Styled.BtnSub>
-          
+
         </View>
 
         <View />

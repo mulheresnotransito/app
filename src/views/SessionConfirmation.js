@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 // import { Ionicons } from '@expo/vector-icons';
 import { Ionicons } from 'react-native-vector-icons';
 
-import logo from '../assets/images/logo-2.png';
+//
 import like from '../assets/icons/like-2.png';
 import whatsapp from '../assets/icons/whatsapp-white.png';
 import dotCircle from '../assets/icons/dot-circle.png';

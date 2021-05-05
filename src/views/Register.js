@@ -20,20 +20,51 @@ import logo from '../assets/images/logo1.png';
 import * as Styled from '../assets/styles/styled';
 import ModalInfo from '../components/modals/ModalInfo';
 
+import * as UsersController from '../controllers/users.controller';
+
 const Register = (props) => {
 
 
-  const [userToLogin, setUserToLogin] = React.useState({
+  const [userToRegister, setUserToRegister] = React.useState({
+    first_name: '',
+    last_name: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: '',
+    is_client: true
   });
 
-  const loginUser = (user) => {
-    // if (user.email == 'login123' && user.password == 'senha123')
-    //   props.navigation.navigate('Home');
-    // else
-    //   Alert.alert('Erro', 'Usuário ou senha incorretos');
-    props.navigation.navigate('Home');
+  const handleRegister = async (user) => {
+    if (user.first_name == '' || user.last_name == '' || user.email == '' || user.password == '' || user.confirmPassword == '' || (user.password != user.confirmPassword)) {
+      Alert.alert('Erro', 'Digite todas as informações');
+      return false;
+    }
+    else {
+      try {
+        let data = (await UsersController.register(user)).data.user;
+        await props.login(data);
+        Alert.alert('Cadastrado!', 'Cadastro efetuado com sucesso :)', [
+          {
+            text: 'OK', onPress: () => {
+              props.navigation.navigate('Home');
+              setUserToRegister({
+                first_name: '',
+                last_name: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                is_client: true
+              });
+            }
+          }
+        ]);
+        return true;
+      }
+      catch (e) {
+        console.log(e);
+        Alert.alert('Erro', 'Não foi possível efetuar seu cadastro :(\n\nTente novamente');
+      }
+    }
   }
 
   const [info, setInfo] = React.useState(props.route.params);
@@ -52,13 +83,13 @@ const Register = (props) => {
       <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
         <Styled.TxtWelcome>Seja bem-vinda!</Styled.TxtWelcome>
         <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '95%', justifyContent: 'center', alignItems: 'space-between', marginVertical: 20 }}>
-          <Styled.TxtInput1 placeholder="Nome" onChangeText={(t) => setUserToLogin({ ...userToLogin, email: t })} />
-          <Styled.TxtInput1 placeholder="Sobrenome" secureTextEntry onChangeText={(t) => setUserToLogin({ ...userToLogin, password: t })} />
+          <Styled.TxtInput1 value={userToRegister.first_name} placeholder="Nome" onChangeText={(t) => setUserToRegister({ ...userToRegister, first_name: t })} />
+          <Styled.TxtInput1 value={userToRegister.last_name} placeholder="Sobrenome" onChangeText={(t) => setUserToRegister({ ...userToRegister, last_name: t })} />
         </View>
-        <Styled.TxtInput placeholder="E-mail" onChangeText={(t) => setUserToLogin({ ...userToLogin, email: t })} />
-        <Styled.TxtInput placeholder="Senha" onChangeText={(t) => setUserToLogin({ ...userToLogin, email: t })} />
-        <Styled.TxtInput placeholder="Repetir senha" onChangeText={(t) => setUserToLogin({ ...userToLogin, email: t })} />
-        <Styled.BtnCTA onPress={() => props.navigation.navigate('Home')}>
+        <Styled.TxtInput value={userToRegister.email} placeholder="E-mail" onChangeText={(t) => setUserToRegister({ ...userToRegister, email: t })} />
+        <Styled.TxtInput value={userToRegister.password} placeholder="Senha" secureTextEntry onChangeText={(t) => setUserToRegister({ ...userToRegister, password: t })} />
+        <Styled.TxtInput value={userToRegister.confirmPassword} placeholder="Repetir senha" secureTextEntry onChangeText={(t) => setUserToRegister({ ...userToRegister, confirmPassword: t })} />
+        <Styled.BtnCTA onPress={() => handleRegister(userToRegister)}>
           <Styled.TxtBtnCTA>CRIAR CONTA</Styled.TxtBtnCTA>
         </Styled.BtnCTA>
         <Styled.BtnSub>
@@ -85,6 +116,12 @@ const mapDispatchToProps = (dispatch) => {
 
     //user logout
     logout: () => dispatch({ type: 'LOGOUT', payload: {} }),
+    //user login
+    login: ({ id, profile_photo, email, first_name, last_name, birthday, sex, language, country, is_client, is_psychologist, is_drive, signature_status, signature_expiration_date, classes_credits, consultations_credits }) => dispatch({
+      type: 'LOGIN', payload: {
+        id, profile_photo, email, first_name, last_name, birthday, sex, language, country, is_client, is_psychologist, is_drive, signature_status, signature_expiration_date, classes_credits, consultations_credits
+      }
+    }),
   }
 };
 

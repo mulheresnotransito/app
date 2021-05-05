@@ -16,7 +16,7 @@ import { connect } from 'react-redux';
 import { Ionicons } from 'react-native-vector-icons';
 
 import profilePic from '../assets/images/profile-pic-2.png';
-import logo from '../assets/images/logo-2.png';
+//
 
 import calendar from '../assets/icons/calendar.png';
 import clock from '../assets/icons/clock.png';
@@ -66,7 +66,7 @@ const PsychologistWallet = (props) => {
       <Styled.ScrollContainer>
 
         <View style={{ alignItems: 'center', justifyContent: 'center', width: '95%', marginVertical: 10, flexDirection: 'row', flexWrap: 'nowrap', }}>
-          <Styled.Logo source={profilePic} />
+          <Styled.ProfileImage source={profilePic} />
           <View style={{ marginHorizontal: 15, flex: 1 }}>
             <Text style={{ fontWeight: '600', fontSize: 18, color: "#C43A57" }}>Maristela Costa</Text>
             <TouchableOpacity style={{ width: 100, padding: 3, marginVertical: 1, backgroundColor: '#C43A57', borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>

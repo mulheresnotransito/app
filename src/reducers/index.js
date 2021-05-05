@@ -4,10 +4,14 @@ import userReducer from './user.reducer';
 import modalReducer from './modal.reducer';
 import classReducer from './class.reducer';
 import consultationReducer from './consultation.reducer';
+import noticeReducer from './notice.reducer';
+import creditReducer from './credit.reducer';
 
 export default combineReducers({
   userReducer,
   modalReducer,
   classReducer,
   consultationReducer,
+  noticeReducer,
+  creditReducer,
 });

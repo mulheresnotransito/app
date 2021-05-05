@@ -29,7 +29,7 @@ const PsychologistProfileEdit = (props) => {
       <ModalInfo title={modal.title} description={modal.desc} />
       <Header screenTitle="Home" navigation={props.navigation} />
       <Styled.ScrollContainer>
-        <Styled.Logo source={profilePic} />
+        <Styled.ProfileImage source={profilePic} />
         <Styled.BtnSub>
           <Styled.TxtBtnSub>Trocar foto de perfil</Styled.TxtBtnSub>
         </Styled.BtnSub>

@@ -62,10 +62,10 @@ const Walkthrough = (props) => {
           <Styled.TxtBtnCTA color="#C43A57">CRIAR CONTA</Styled.TxtBtnCTA>
         </Styled.BtnCTA>
 
-        <Styled.BtnCTA onPress={() => props.navigation.navigate('Home')} style={{ flexDirection: 'row', flexWrap: 'nowrap' }} borderColor="#fff" bgColor="#fff">
+        {/* <Styled.BtnCTA onPress={() => props.navigation.navigate('Home')} style={{ flexDirection: 'row', flexWrap: 'nowrap' }} borderColor="#fff" bgColor="#fff">
           <Styled.Illustration source={facebook} style={{ width: 16, height: 16, marginRight: 3 }} />
           <Styled.TxtBtnCTA color="#C43A57">ENTRAR COM FACEBOOK</Styled.TxtBtnCTA>
-        </Styled.BtnCTA>
+        </Styled.BtnCTA> */}
       </View>
 
       <View />

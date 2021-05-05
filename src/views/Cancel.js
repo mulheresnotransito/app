@@ -7,7 +7,8 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -15,7 +16,7 @@ import { connect } from 'react-redux';
 // import { Ionicons } from '@expo/vector-icons';
 import { Ionicons } from 'react-native-vector-icons';
 
-import logo from '../assets/images/logo-2.png';
+//
 import camera from '../assets/icons/camera.png';
 import whatsapp from '../assets/icons/whatsapp-green.png';
 
@@ -23,35 +24,35 @@ import * as Styled from '../assets/styles/styled';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
+import * as ClassesController from "../controllers/classes.controller";
+
 const Cancel = (props) => {
 
-  const [userToLogin, setUserToLogin] = React.useState({
-    email: '',
-    password: ''
-  });
+  const [scheduledClass, setScheduledClass] = React.useState(props.scheduledClass);
 
-  const loginUser = (user) => {
-    // if(user.email == 'teste@hinoselouvores.com' && user.password == '123456')
-    //   navigation.navigate('Home');
-    // else
-    //   Alert.alert('Erro', 'Usuário ou senha incorretos');
-    props.navigation.navigate('Market');
+  const handleCancel = async (classToCancel) => {
+    if (!classToCancel.id || !classToCancel.id_user_client || !classToCancel.text) {
+      Alert.alert("Oooops!", "Preencha todos os campos antes de cancelar a aula :)");
+      console.log({scheduledClass})
+      return false;
+    }
+    try {
+      let canceledClass = await ClassesController.cancel(classToCancel);
+      Alert.alert("Aula cancelada!", "A aula que estava agendada anteriormente foi cancelada.");
+      props.navigation.navigate("Home");
+      return true;
+    } catch (error) {
+      console.log({ error });
+      Alert.alert("Erro", "Não foi possível cancelar a aula. Verifique os dados e tente novamente mais tarde.");
+      return false;
+    }
+
   }
 
-  const [info, setInfo] = React.useState(props.route.params);
-  React.useEffect(() => {
-    // console.log({ props })
-    setInfo(props.route.params);
-  }, [props.route.params]);
+  React.useEffect( () => {
+    console.log({initial: scheduledClass})
+  }, []);
 
-  const [modal, setModal] = React.useState({ title: "Em desenvolvimento", desc: "Esta função que você tentou acessar ainda está em desenvolvimento" });
-
-  const [classes, setClasses] = React.useState([
-    { id: 1, title: "1 aula", description: "R$65,00", active: true },
-    { id: 2, title: "5 aulas", description: "R$320,00 (em até 2x no cartão de crédito)", active: false },
-    { id: 3, title: "10 aulas", description: "R$630,00 (em até 3x no cartão de crédito)", active: false },
-    { id: 4, title: "15 aulas", description: "R$930,00 (em até 4x no cartão de crédito)", active: false },
-  ]);
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
       <Header screenTitle="Home" client psychologist navigation={props.navigation} />
@@ -63,7 +64,7 @@ const Cancel = (props) => {
         </View>
 
         <Styled.TxtQuestion style={{ fontWeight: '500', fontSize: 14, color: "#D987A3", margin: 0, padding: 0, width: '90%', textAlign: 'left' }}>Conte para nós o motivo do cancelamento*</Styled.TxtQuestion>
-        <Styled.TxtInput placeholder="Escreva aqui..." />
+        <Styled.TxtInput defaultValue={scheduledClass?.text} onChangeText={(e) => setScheduledClass({ ...scheduledClass, text: e })} placeholder="Escreva aqui..." />
 
         <Styled.TxtQuestion style={{ fontWeight: '500', fontSize: 14, color: "#D987A3", margin: 0, padding: 0, width: '90%', textAlign: 'left', marginVertical: 10 }}>Ficou doente e tem atestado?</Styled.TxtQuestion>
 
@@ -72,7 +73,7 @@ const Cancel = (props) => {
           <Styled.Illustration source={camera} style={{ width: 25, height: 21.88, marginHorizontal: 3, }} />
         </TouchableOpacity>
 
-        <Styled.BtnCTA2 onPress={() => props.navigation.navigate('CardCancel')} style={{ marginTop: 50 }}>
+        <Styled.BtnCTA2 onPress={() => handleCancel(scheduledClass)} style={{ marginTop: 50 }}>
           <Styled.TxtBtnCTA2>CANCELAR AULA</Styled.TxtBtnCTA2>
         </Styled.BtnCTA2>
 
@@ -98,6 +99,9 @@ const mapStateToProps = (state) => {
   return {
     //modal
     modalInfoVisible: state.modalReducer.modalInfoVisible,
+
+    //class
+    scheduledClass: state.classReducer.scheduledClass
   }
 };
 

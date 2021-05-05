@@ -175,6 +175,24 @@ export const SectionTitle = styled.Text`
   flex: 1;
 `;
 
+export const SectionTitleTwo = styled.Text`
+  font-size: 22px;
+  font-weight: 400;
+  color: #C43A57;
+  width: 90%;
+  text-align: left;
+`;
+
+
+export const TextAlert = styled.Text`
+  font-size: 14px;
+  font-weight: 400;
+  color: #C43A57;
+  width: 90%;
+  text-align: center;
+  margin: 5px 0px;
+`;
+
 export const SectionButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
@@ -269,6 +287,22 @@ export const Container = styled.View`
   padding-top: 30px;
 `;
 
+export const MapContainer = styled.View`
+  flex: 1;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  background-color: #fff;
+`;
+
+export const ContainerKeyboard = styled.KeyboardAvoidingView`
+  flex:1;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #fff;
+  padding-top: 0;
+`;
+
 export const Scroll = styled.View`
   flex: 1;
   border-top-left-radius: 50px;
@@ -309,13 +343,14 @@ export const HeaderContainer = styled.View`
 `;
 
 export const FooterContainer = styled.View`
-flex-direction: row;
-flex-wrap: nowrap;
-align-items: flex-end;
-justify-content: space-around;
-padding: 10px 0px 15px 0px;
-width: 100%;
-background-color: #fff;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: space-around;
+  /* padding: 10px 0px 15px 0px; */
+  padding: 10px 0px 15px 0px;
+  width: 100%;
+  background-color: #fff;
 `;
 
 export const Row = styled.TouchableOpacity`
@@ -373,6 +408,15 @@ export const Logo = styled.Image`
   width: ${props => 608 * 0.3 + "px"};
   height: ${props => 165 * 0.3 + "px"};
 `;
+export const ProfileImage = styled.Image`
+  width: ${props => 200 * 0.3 + "px"};
+  height: ${props => 200 * 0.3 + "px"};
+`;
+export const ProfileImage2 = styled.Image`
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+`;
 export const Illustration = styled.Image`
   width: ${props => 1125 * 0.3 + "px"};
   height: ${props => 1082 * 0.3 + "px"};
@@ -420,7 +464,7 @@ export const ModalView = styled.View.attrs(props => ({
   position: absolute; 
   bottom: 0; 
   margin: 0; 
-  border: 2px solid #aaa;
+  border: 2px solid #fff;
   /* elevation: 0; */
 `;
 
@@ -490,17 +534,27 @@ export const TxtBtnBack = styled.Text`
   color: #fff;
 `;
 
+export const ClassBox = styled.TouchableOpacity`
+  width: 75px;
+  height: 75px;
+  /* border: 4px solid #aeaeae;  */
+  border: 1px solid #aeaeae;  
+  border-radius: 50px;
+  margin: 0px 3px;
+  padding: 3px;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFF;
+`;
+
 export const ClassBoxCircleContainer = styled.TouchableOpacity`
-  margin: 0px 5px;
-  padding: 0;
   align-items: center;
   justify-content: center;
   background-color: #C43A57;
+  width: 66px;
+  height: 66px;
   border-radius: 50px;
-  /* border: 2px solid #efefef; */
-  width: 75px;
-  height: 75px;
-  /* opacity: 1; */
+  padding: 0;
 `;
 
 export const ClassBoxCircleDay = styled.Text`
@@ -565,7 +619,7 @@ export const ClassBoxContainer = styled.TouchableOpacity`
   padding: 10px;
   align-items: center;
   justify-content: space-between;
-  background-color: ${ props => props.selected ? "#5227a0" : "#e2e5e9"};
+  background-color: ${props => props.selected ? "#5227a0" : "#e2e5e9"};
   width: 90%;
   border-radius: 10px;
   /* height: 108px; */
@@ -576,7 +630,7 @@ export const ClassBoxContainer = styled.TouchableOpacity`
 export const ClassBoxTitle = styled.Text`
   font-size: 14px;
   font-weight: 600;
-  color: ${ props => props.selected ? "#e2e5e9" : "#5227a0"};
+  color: ${props => props.selected ? "#e2e5e9" : "#5227a0"};
   flex: 1;
   margin-left: 10px;
 `;
@@ -718,7 +772,7 @@ export const HeaderTxtComp = styled.Text`
   /* width: 100%; */
 `;
 
-export const HeaderComp = styled.View`
+export const HeaderComp = styled.TouchableOpacity`
   background-color: #FFEBF1;
   border-radius: 10px;
   padding: 5px;
@@ -728,3 +782,49 @@ export const HeaderComp = styled.View`
   flex-wrap: nowrap;
 `;
 
+export const SearchBar = styled.TextInput`
+  margin: 5px 0px;
+  padding: 12px;
+  border-width: 1px;
+  border-color: #ccc;
+  border-radius: 50px;
+  width: 90%;
+  color: #555;
+  font-weight: bold;
+`;
+
+export const List = styled.View`
+  padding: 5px;
+  width: 90%;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: row;
+  flex-wrap: wrap;
+`;
+
+export const ListItem = styled.TouchableOpacity`
+  background-color: #fff;
+  border-radius: 10px;
+  width: 45%;
+  height: 140px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 5px;
+  border-width: ${props => props.selected ? '3px' : '1px'};
+  border-color: ${props => props.selected ? 'rgb(65, 185, 98)' : '#ddd'};
+`;
+
+export const ListPhoto = styled.Image`
+  flex: 1;
+  width: 100%;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+`;
+
+export const ListTitle = styled.Text`
+  color: rgb(185, 65, 98);
+  font-weight: 500;
+  padding: 8px 5px;
+  font-size: 12px;
+`;

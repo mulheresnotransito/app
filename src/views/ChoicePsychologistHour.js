@@ -7,14 +7,15 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Modal
 } from 'react-native';
 
 import { connect } from 'react-redux';
 
 import { Ionicons } from '@expo/vector-icons';
 
-import logo from '../assets/images/logo-2.png';
+//
 import check from "../assets/icons/check-circle-2.png"
 import dotCircle from "../assets/icons/dot-circle.png"
 
@@ -23,6 +24,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const ChoicePsychologistHour = (props) => {
+
+  const [modalIsVisible, setModalIsVisible] = React.useState(false);
 
   const [dates, setDates] = React.useState([
     { id: 1, title: 'Início: 09:30', description: 'Duração: 30 minutos', day: '11', month: 'setembro', selected: true },
@@ -36,6 +39,7 @@ const ChoicePsychologistHour = (props) => {
     <Styled.Container style={{ paddingTop: 0 }}>
       <Header screenTitle="Home" psychologist navigation={props.navigation} />
 
+
       {/* <Styled.Scroll> */}
       <Styled.ScrollContainer>
         <Styled.TxtQuestion style={{ fontSize: 18, fontWeight: '400', width: '90%', textAlign: 'left' }}>Próximas sessões</Styled.TxtQuestion>
@@ -43,9 +47,11 @@ const ChoicePsychologistHour = (props) => {
         <View style={{ width: '95%' }}>
           {dates && dates.map((date, index) => {
             let act = selectedDates.indexOf(date.id);
-            console.log({act, id: date.id})
+            console.log({ act, id: date.id })
             return (
-              <TouchableOpacity key={date.id} style={{ flexDirection: 'row', flexWrap: 'nowrap', backgroundColor: '#fff', marginVertical: 5, borderWidth: 1, borderRadius: 10, borderColor: '#F4F4F4' }} onPress={() => console.log('kljlkdfjdslfk') }>
+              <TouchableOpacity key={date.id}
+                style={{ flexDirection: 'row', flexWrap: 'nowrap', backgroundColor: '#fff', marginVertical: 5, borderWidth: 1, borderRadius: 10, borderColor: '#F4F4F4' }}
+                onPress={() => setModalIsVisible(true)}>
                 <View style={{ borderTopLeftRadius: 10, borderBottomLeftRadius: 10, backgroundColor: '#FFEBF1', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, paddingHorizontal: 5, width: 75 }}>
                   <Text style={{ fontWeight: '700', fontSize: 30, color: "#C43A57", flex: 1 }}>{date.day}</Text>
                   <Text style={{ fontWeight: '400', fontSize: 12, color: "#C43A57", flex: 1 }}>{date.month}</Text>
@@ -54,7 +60,7 @@ const ChoicePsychologistHour = (props) => {
                   <View style={{ flexDirection: 'row', flexWrap: 'nowrap' }}>
                     <Text style={{ fontWeight: '800', fontSize: 13, color: "#C43A57", marginBottom: 5 }}>{date.title}</Text>
                   </View>
-                  <Text style={{ fontWeight: '400', fontSize: 13, color: "#C43A57", }}>{"- " +date.description}</Text>
+                  <Text style={{ fontWeight: '400', fontSize: 13, color: "#C43A57", }}>{"- " + date.description}</Text>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                   {act && <Styled.Illustration source={check} style={{ width: 20, height: 20, marginRight: 10 }} />}

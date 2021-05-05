@@ -7,15 +7,22 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  TouchableHighlight,
   ScrollView,
   Dimensions,
-  ImageBackground
+  ImageBackground,
+  RefreshControl,
+  Modal,
+  Alert,
+  KeyboardAvoidingView,
+  Pressable
 } from 'react-native';
 import { connect } from 'react-redux';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
 
 import { Ionicons } from '@expo/vector-icons';
 
-import logo from '../assets/images/logo-2.png';
 import map from '../assets/images/map.jpeg';
 import dotCircle from '../assets/icons/dot-circle.png';
 import calendar from '../assets/icons/calendar.png';
@@ -30,44 +37,16 @@ import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 
 import pic from '../assets/images/profile-pic-1.png';
-import { set } from 'react-native-reanimated';
+import * as ClassesController from '../controllers/classes.controller';
+import ModalChoiceClassDate from '../components/modals/ModalChoiceClassDate';
+import ModalChoiceClassHour from '../components/modals/ModalChoiceClassHour';
 
 const Home = (props) => {
 
-
+  const [clickedClass, setClickedClass] = React.useState(false);
+  const [modalIsVisible, setModalIsVisible] = React.useState(false);
   const [location, setLocation] = React.useState(null);
-  const [modal, setModal] = React.useState({ title: "Em desenvolvimento", desc: "Esta função que você tentou acessar ainda está em desenvolvimento" });
-
-  const [classes, setClasses] = React.useState([
-    { id: 1, day: "20", month: "out", color: "#C43A57" },
-    { id: 2, day: "20", month: "out", color: "#B94162" },
-    { id: 3, day: "25", month: "out", color: "#C45070" },
-    { id: 4, day: "01", month: "nov", color: "#D06884" },
-    { id: 5, day: "20", month: "nov", color: "#E2819B" },
-  ]);
-  const [exercises, setExercises] = React.useState([
-    { id: 1, title: "NÚMEROS INTEIROS", teacher: "Tutoriar", description: "4º ano", icon: "ios-laptop" },
-    { id: 2, title: "NÚMEROS INTEIROS", teacher: "Tutoriar", description: "5º ano", icon: "ios-keypad" },
-    { id: 3, title: "NÚMEROS INTEIROS", teacher: "Jonas", description: "6º ano", icon: "ios-leaf" },
-    { id: 4, title: "NÚMEROS INTEIROS", teacher: "Jonas", description: "7º ano", icon: "ios-medkit" },
-    { id: 5, title: "NÚMEROS INTEIROS", teacher: "Jonas", description: "8º ano", icon: "ios-megaphone" },
-  ]);
-  const [modules, setModules] = React.useState([
-    { id: 1, title: "4º ano", icon: "ios-flag" },
-    { id: 2, title: "5º ano", icon: "ios-flame" },
-    { id: 3, title: "6º ano", icon: "ios-flash" },
-    { id: 4, title: "7º ano", icon: "ios-flask" },
-    { id: 5, title: "8º ano", icon: "ios-flower" },
-    { id: 6, title: "9º ano", icon: "ios-jet" },
-  ]);
-  const [ranks, setRanks] = React.useState([
-    { id: 1, position: "1º", title: "João da Silva", points: 100 },
-    { id: 2, position: "2º", title: "João da Silva", points: 200 },
-    { id: 3, position: "3º", title: "João da Silva", points: 300 },
-    { id: 4, position: "4º", title: "João da Silva", points: 400 },
-    { id: 5, position: "5º", title: "João da Silva", points: 500 },
-    { id: 6, position: "6º", title: "João da Silva", points: 600 },
-  ]);
+  const [clickedLocation, setClickedLocation] = React.useState(null);
 
   const getCurrentPosition = async () => {
 
@@ -78,67 +57,128 @@ const Home = (props) => {
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    console.log(location)
+    // console.log(location)
     setLocation(location);
 
   }
 
-  const [searchText, setSearchText] = React.useState('');
-  const [timer, setTimer] = React.useState(0);
-
-  const searchLocal = async (textToSearch) => {
-    alert(textToSearch)
+  const getClasses = async (user_id) => {
+    console.log({ user_id })
+    let c = await ClassesController.getAllByUserId(user_id);
+    console.log({ new_classes: c.data.lessons })
+    await props.setClasses(c.data.lessons);
   }
-
-  const txtFill = (txt) => {
-    console.log('on txt fill')
-    let delay = 3000;
-    console.log({delay})
-    let now = new Date().getTime();
-    console.log({now})
-    console.log({timer})
-    if (timer && (now - timer) < delay) { //o tempo é menor
-      console.log(timer, now, delay)
-    } else { // o tempo é maior
-      setTimer(now);
-      console.log(txt)
-      setSearchText(txt)
-    }
-    // if (timer > now) { console.log(timer, now) }
-    // else { console.log(timer, now) }
-    // clearTimeout(timer);
-    // setTimeout(searchLocal(txt), 2000);
-  }
-
 
   React.useEffect(() => {
-    // console.log(props.user)
-    // console.log(props.classes)
-    // console.log(props.consultations)
-    props.classes.map(c => {
-      // console.log('id: ', c.id, ' day: ', (c.date).getDate())
-      // console.log('id: ', c.id, ' month: ', functions.getMonthName((c.date).getMonth()))
-    })
-
+    getClasses(props.user.id);
     getCurrentPosition();
-
+    // console.log(props.user)
   }, []);
 
+  const [modalDateVisible, setModalDateVisible] = React.useState(false);
+  const [modalHourVisible, setModalHourVisible] = React.useState(false);
+  const [newClass, setNewClass] = React.useState({ date: '', hour: '', });
+
+  const handleSchedule = () => {
+
+    if (!props.newClass?.date || !props.newClass?.hour) {
+      Alert.alert("Oooops!", "Preencha todas as informações antes de agendar a aula.");
+    } else if (props.user?.classes_credits <= 0) {
+      Alert.alert("Oooops!", "Você não tem créditos para agendar a aula.", [
+        { text: "COMPRAR CRÉDITOS", onPress: () => { props.navigation.navigate('BuyClassesCredits') } }
+      ]);
+    }
+  }
+
+  const [map, setMap] = React.useState({});
+
+  // const realignMap = () => map.fitToSuppliedMarkers(["origin", "destination"], {
+  const realignMap = () => {
+
+    setTimeout(() => {
+      map.fitToSuppliedMarkers(["destination"], {
+        edgePadding: { left: 100, top: 100, right: 100, bottom: 100 }, animated: true
+      })
+    }, 1000);
+  };
+
+  const [filtered, setFiltered] = React.useState([]);
+  const [results, setResults] = React.useState([
+    { id: 1, title: "test 1", coords: { latitude: 37.7897442, longitude: -122.3972337 } },
+    { id: 2, title: "Transamerica pyramid 2", coords: { latitude: 37.7951775, longitude: -122.4027787 } },
+    { id: 3, title: "Sutro Tower", coords: { latitude: 37.7428201, longitude: -122.4701585 } },
+  ]);
+  const [searchText, setSearchText] = React.useState('');
+  const handleOnSearch = (text) => {
+    if (text != "") setFiltered(results.filter(r => r.title.includes(text)));
+    else setFiltered([]);
+    return text.toLowerCase();
+  }
+
+  const handleSetClickedLocation = (loc) => {
+    setClickedLocation(loc)
+    // setClickedLocation({ ...clickedLocation, coords: { latitude: loc.coords.latitude, longitude: loc.coords.longitude } });
+    // setLocation({ ...location, coords: { latitude: loc.coords.latitude, longitude: loc.coords.longitude } });
+    setSearchText(loc.title);
+    setFiltered([]);
+    realignMap();
+    return true;
+  }
+
   return (
-    <Styled.Container style={{ paddingTop: 0, backgroundColor: '#fff' }}>
+    // <Styled.Container style={{ paddingTop: 0, backgroundColor: '#fff' }}>
+    // <Styled.ContainerKeyboard behavior="position" enabled style={{ paddingTop: 0, backgroundColor: '#fff' }}>
+    <Styled.ContainerKeyboard behavior="position" enabled
+      contentContainerStyle={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "flex-end",
+        backgroundColor: "#fff",
+        width: "100%"
+      }}>
       <Header screenTitle="Home" client navigation={props.navigation} />
 
-      {/* <Styled.Scroll> */}
-      <Styled.ScrollContainer>
-        <Styled.SectionTitle style={{ width: '90%' }}>Próximas aulas</Styled.SectionTitle>
+      <ModalChoiceClassDate visible={modalDateVisible} setVisible={setModalDateVisible} />
+      <ModalChoiceClassHour visible={modalHourVisible} setVisible={setModalHourVisible} />
 
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalIsVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitle}>Informações da aula</Text>
+            <Text style={styles.modalText}>Motorista: {clickedClass.driver_name}</Text>
+            <Text style={styles.modalText}>E-mail do motorista: {clickedClass.driver_email}</Text>
+            <Text style={styles.modalText}>Ponto de encontro: {clickedClass.starting_point}</Text>
+            <Text style={styles.modalText}>Status: {clickedClass.status}</Text>
+            <Text style={styles.modalText}>Data: {clickedClass.date}</Text>
+            <TouchableHighlight
+              underlayColor="#f5c0d0"
+              style={{ ...styles.openButton, backgroundColor: '#C43A57' }}
+              onPress={() => {
+                setModalIsVisible(!modalIsVisible);
+              }}>
+              <Text style={styles.textStyle}>Fechar</Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </Modal>
 
+      <Styled.MapContainer>
+        {
+          props.classes?.length > 0
+          &&
+          <Styled.SectionTitleTwo>Próximas aulas</Styled.SectionTitleTwo>
+        }
+        {
+          (props.user?.is_psychologist || props.user?.is_driver) && <Styled.TextAlert>Essa tela é visível apenas para o cliente</Styled.TextAlert>
+        }
 
-
-        {/* <ImageBackground source={map} style={{ width: '100%', height: Dimensions.get('window').height - 160, alignItems: 'center', justifyContent: 'flex-start', }}> */}
-        <View style={{ width: '100%', height: Dimensions.get('window').height - 160, alignItems: 'center', justifyContent: 'flex-end', }}>
-
-
+        <View style={{ flex: 1, paddingBottom: 20, width: '100%', height: Dimensions.get('window').height - 200, alignItems: 'center', justifyContent: 'flex-end', }}>
 
           {location && <View style={StyleSheet.absoluteFillObject}>
 
@@ -148,118 +188,171 @@ const Home = (props) => {
                 longitude: location.coords.longitude || -122.0840363,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
+                // latitudeDelta: 0.0004,
+                // longitudeDelta: 0.0004,
               }}
 
               style={StyleSheet.absoluteFillObject}
+              ref={object => setMap(object)}
             >
-              <Marker
-                coordinate={{ latitude: location.coords.latitude || 37.4219312, longitude: location.coords.longitude || -122.0840363 }}
+              {location && <Marker
+                coordinate={{ latitude: location?.coords.latitude, longitude: location?.coords.longitude }}
                 title={'Aluna X'}
                 description={'Aluna X - 2 aulas'}
                 icon={pic}
                 style={{}}
-              />
-
+                identifier="origin"
+              />}
+              {clickedLocation && <Marker
+                coordinate={{ latitude: clickedLocation?.coords.latitude, longitude: clickedLocation?.coords.longitude }}
+                title={clickedLocation?.title}
+                description={'Destino clicado no mapa.'}
+                icon={pic}
+                style={{}}
+                identifier="destination"
+              />}
               <View style={{ position: 'absolute', top: 100, left: 50 }} />
             </MapView>
 
           </View>}
-
-
-
-
-
-          <Styled.ScrollHorizontal style={{ height: 50 }} contentContainerStyle={{ alignItems: 'flex-start', justifyContent: 'flex-start' }}>
-            {/* {classes && classes.map(c => {
-              return (
-                <Styled.ClassBoxCircleContainer onPress={() => props.navigation.navigate('Confirmation')} style={{ backgroundColor: c.color }} key={c.id}>
-                  <Styled.ClassBoxCircleDay>{c.day}</Styled.ClassBoxCircleDay>
-                  <Styled.ClassBoxCircleMonth>{c.month}</Styled.ClassBoxCircleMonth>
-                </Styled.ClassBoxCircleContainer>
-              );
-            })} */}
+          <Styled.ScrollHorizontal style={{ height: 50 }} contentContainerStyle={{ flexDirection: "column", alignItems: 'flex-start', justifyContent: 'flex-start' }}>
             {props.classes && props.classes.map((c, index, arr) => {
               let opacity = (((arr.length - (index + 1)) / arr.length) + (1 / arr.length));
-              console.log({ opacity })
-              return (
-                <Styled.ClassBoxCircleContainer onPress={() => {
-                  console.log({ c })
-                  props.setCurrentClass(c) && props.navigation.navigate('Confirmation')
-                }
-                }
+              console.log({c})
+              if (c.status != "canceled")
+                return (
+                  <Styled.ClassBox key={c.id}>
 
-                  activeOpacity={0.7}
-                  style={{ backgroundColor: 'rgba(196, 58, 87, ' + opacity + ')' }} key={c.id}>
-                  {/* // style={{ backgroundColor: 'rgba(196, 58, 87,1)' }} key={c.id}> */}
-                  <Styled.ClassBoxCircleDay>{(c.date).getDate()}</Styled.ClassBoxCircleDay>
-                  <Styled.ClassBoxCircleMonth>{functions.getMonthName((c.date).getMonth())}</Styled.ClassBoxCircleMonth>
-                </Styled.ClassBoxCircleContainer>
-              );
+                    <Styled.ClassBoxCircleContainer onPress={async () => {
+                      setClickedClass(c)
+                      await props.setScheduledClass(c)
+                      props.navigation.navigate("Confirmation");
+                      // setModalIsVisible(true)
+                    }
+                    }
+                      activeOpacity={0.7}
+                      style={{ backgroundColor: 'rgba(196, 58, 87, ' + opacity + ')' }} key={c.id}>
+                      <Styled.ClassBoxCircleDay>{(c.date).split("/")[0]}</Styled.ClassBoxCircleDay>
+                      <Styled.ClassBoxCircleMonth>{(functions.getMonthName(parseInt((c.date).split("/")[1])))}</Styled.ClassBoxCircleMonth>
+                    </Styled.ClassBoxCircleContainer>
+                  </Styled.ClassBox>
+                );
             })}
           </Styled.ScrollHorizontal>
+
           <View style={{ flex: 2 }} />
           <View style={{ flex: 2 }} />
           <View style={{ flex: 3 }} />
 
-
+          {/* <GooglePlacesAutocomplete
+            styles={{ container: { backgroundColor: "green", height: 50, width: "90%", marginVertical: 5 } }}
+            placeholder='Search'
+            value={searchText}
+            onFail={(e) => console.log("error", e)}
+            onChangeText={(e) => console.log(e)}
+            onPress={(data, details = null) => {
+              // 'details' is provided when fetchDetails = true
+              console.log(data, details);
+            }}
+            query={{
+              key: 'AIzaSyBvEDZQOn34br9BLqNTUe9HbJNACpFody8',
+              language: 'en',
+            }}
+          /> */}
 
           <View style={{ flexDirection: 'column', width: '90%', marginVertical: 3, marginHorizontal: 0, borderRadius: 10, backgroundColor: "#fff", padding: 10, }}>
             <View style={{ flexDirection: 'row', flexWrap: 'nowrap', marginBottom: -15 }}>
               <Styled.Illustration source={dotCircle} style={{ width: 20, height: 20, marginRight: 3 }} />
               <Styled.SectionTitle style={{ textAlign: 'left', fontWeight: 'bold', fontSize: 16, width: '100%', margin: 0 }}>Onde nos encontramos?</Styled.SectionTitle>
             </View>
-            <Styled.TxtInput style={{ width: '90%', margin: 0, fontSize: 14 }} value={searchText} onChangeText={(e) => txtFill(e)} placeholder="Digite o local aqui..." />
+            <Styled.TxtInput style={{ width: '90%', margin: 0, fontSize: 14 }} value={searchText} onChangeText={(e) => setSearchText(handleOnSearch(e))} placeholder="Digite o local aqui..." />
+          </View>
+
+          <View style={{ width: "90%", backgroundColor: "#FFF" }}>
+            {filtered && filtered.map(result => {
+              return (
+                <TouchableOpacity key={result.id} style={{ padding: 6, margin: 2, borderBottomWidth: 2, borderBottomColor: "#ccc" }}
+                  onPress={() => handleSetClickedLocation(result)}
+                >
+                  <Text>{result.title}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
 
           <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '90%', marginVertical: 3, marginHorizontal: 0, borderRadius: 10, backgroundColor: "#fff", padding: 10, alignItems: 'center', justifyContent: 'space-between' }}>
-            <View style={{ flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'center' }}>
+            <TouchableOpacity
+              onPress={() => setModalDateVisible(true)}
+              style={{ flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'center' }}>
               <Styled.Illustration source={calendar} style={{ width: 20, height: 22.86, marginRight: 3 }} />
-              <Text style={{ fontWeight: 'bold', fontSize: 16, color: "#C43A57" }}>14/10 (quarta-feira)</Text>
-            </View>
-            <View style={{ flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 16, color: "#C43A57" }}>{props.newClass?.date || "Escolher data"}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setModalHourVisible(true)}
+              style={{ flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'center' }}>
               <Styled.Illustration source={clock} style={{ width: 20, height: 20, marginRight: 3 }} />
-              <Text style={{ fontWeight: 'bold', fontSize: 16, textAlign: 'left', color: "#C43A57" }}>18:00</Text>
-            </View>
+              {!(props.newClass?.hour) && <Text style={{ fontWeight: 'bold', fontSize: 16, textAlign: 'left', color: "#C43A57" }}>Escolher horário</Text>}
+              {(props.newClass?.hour) && <Text style={{ fontWeight: 'bold', fontSize: 16, textAlign: 'left', color: "#C43A57" }}>{props.newClass?.hour?.initial_hour + " - " + props.newClass?.hour?.end_hour}</Text>}
+            </TouchableOpacity>
           </View>
 
-
-          <Styled.BtnCTA2 onPress={() => props.navigation.navigate('ChoiceClasses')}>
+          <Styled.BtnCTA2 onPress={() => handleSchedule()}>
             <Styled.TxtBtnCTA2>AGENDAR</Styled.TxtBtnCTA2>
           </Styled.BtnCTA2>
 
-
-
-
-
-
-
-
-
-
-
-          {/* </ImageBackground> */}
-
-
-
-
-
-
-
         </View>
-
-
-
-
-
-
-
-        {/* </Styled.Scroll> */}
-      </Styled.ScrollContainer>
+      </Styled.MapContainer>
 
       <Footer screenTitle="Home" client navigation={props.navigation} />
-    </Styled.Container>
+    </Styled.ContainerKeyboard>
   );
 };
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  openButton: {
+    backgroundColor: '#F194FF',
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginTop: 10
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 5,
+    textAlign: 'left',
+  },
+  modalTitle: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontWeight: 'bold'
+  },
+});
+
 
 const mapStateToProps = (state) => {
   return {
@@ -271,6 +364,7 @@ const mapStateToProps = (state) => {
 
     //classes
     classes: state.classReducer.classes,
+    newClass: state.classReducer.newClass,
 
     //consultations
     consultations: state.consultationReducer.consultations,
@@ -283,6 +377,8 @@ const mapDispatchToProps = (dispatch) => {
     setModalInfoVisible: (modalInfoVisible) => dispatch({ type: 'SET_MODAL_INFO_VISIBLE', payload: { modalInfoVisible } }),
     //class
     setCurrentClass: (currentClass) => dispatch({ type: 'SET_CURRENT_CLASS', payload: { currentClass } }),
+    setClasses: (classes) => dispatch({ type: 'SET_CLASSES', payload: { classes } }),
+    setScheduledClass: (scheduledClass) => dispatch({ type: 'SET_SCHEDULED_CLASS', payload: { scheduledClass } }),
     //consultation
     setCurrentConsultation: (currentConsultation) => dispatch({ type: 'SET_CURRENT_CONSULTATION', payload: { currentConsultation } }),
   }

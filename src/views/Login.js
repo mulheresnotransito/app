@@ -2,7 +2,8 @@ import React from 'react';
 import {
   Alert,
   View,
-  ImageBackground
+  TouchableOpacity,
+  Text
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -26,51 +27,49 @@ const Login = (props) => {
 
   const loginUser = async (user) => {
 
-    if (user.email == '' || user.password == '') {
-      Alert.alert('Erro', 'Preencha todos os campos');
-      return false;
+    try {
+      if (user.email == '' || user.password == '') {
+        Alert.alert('Erro', 'Preencha todos os campos');
+        return false;
+      }
+      setIsLoading(true);
+      let response = await UsersController.login(user);
+      // console.log({response})
+      if (response.status) {
+        props.login(response.data.user)
+        let newConsultations = response.data.consultations;
+        let newClasses = response.data.lessons;
+
+        console.log({ newClasses })
+
+        await props.setConsultations(newConsultations)
+        await props.setClasses(newClasses)
+        setIsLoading(false);
+        return true;
+      }
+      else {
+        Alert.alert('Erro', response?.error && response?.error)
+        setIsLoading(false);
+        return false;
+      }
     }
-    setIsLoading(true);
-    let response = await UsersController.login(user);
-
-    if (response.status) {
-      props.login(response.data.user)
-      let newConsultations = response.data.consultations;
-      let newClasses = response.data.lessons;
-
-      newConsultations = newConsultations.map(c => {
-        c.date = new Date(c.date);
-        return c;
-      });
-
-      newClasses = newClasses.map(c => {
-        c.date = new Date(c.date);
-        return c;
-      });
-
-      console.log({ newClasses })
-
-
-      props.setConsultations(newConsultations)
-      props.setClasses(newClasses)
+    catch (error) {
       setIsLoading(false);
-      return true;
-    }
-    else {
-      setIsLoading(false);
-      return false;
+      console.log({ error })
+      Alert.alert('Erro', error);
     }
 
   }
 
   return (
     <Styled.Container style={{ justifyContent: 'space-around' }}>
+
       <Styled.Logo source={logo} />
 
       <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
         <Styled.TxtWelcome>Seja bem-vinda novamente!</Styled.TxtWelcome>
         <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '95%', justifyContent: 'center', alignItems: 'space-between', marginVertical: 20 }}>
-          <Styled.TxtInput1 placeholder="E-mail" onChangeText={(t) => setUserToLogin({ ...userToLogin, email: t })} />
+          <Styled.TxtInput1 placeholder="E-mail" onChangeText={(t) => setUserToLogin({ ...userToLogin, email: t.toLowerCase() })} />
           <Styled.TxtInput1 placeholder="Senha" secureTextEntry onChangeText={(t) => setUserToLogin({ ...userToLogin, password: t })} />
         </View>
         <Styled.BtnCTA onPress={async () => await loginUser(userToLogin) && (props.navigation.navigate('Home'))}>
@@ -96,9 +95,9 @@ const mapDispatchToProps = (dispatch) => {
     setModalInfoVisible: (modalInfoVisible) => dispatch({ type: 'SET_MODAL_INFO_VISIBLE', payload: { modalInfoVisible } }),
 
     //user login
-    login: ({ id, email, first_name, last_name, birthday, sex, language, country, is_client, is_psychologist, is_drive, signature_status, signature_expiration_date, classes_credits, consultations_credits }) => dispatch({
+    login: ({ id, profile_photo, email, first_name, last_name, birthday, sex, language, country, is_client, is_psychologist, is_drive, signature_status, signature_expiration_date, classes_credits, consultations_credits }) => dispatch({
       type: 'LOGIN', payload: {
-        id, email, first_name, last_name, birthday, sex, language, country, is_client, is_psychologist, is_drive, signature_status, signature_expiration_date, classes_credits, consultations_credits
+        id, profile_photo, email, first_name, last_name, birthday, sex, language, country, is_client, is_psychologist, is_drive, signature_status, signature_expiration_date, classes_credits, consultations_credits
       }
     }),
     //user logout
