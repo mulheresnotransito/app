@@ -44,9 +44,18 @@ import ModalChoiceClassHour from '../components/modals/ModalChoiceClassHour';
 const Home = (props) => {
 
   const [clickedClass, setClickedClass] = React.useState(false);
-  const [modalIsVisible, setModalIsVisible] = React.useState(false);
   const [location, setLocation] = React.useState(null);
   const [clickedLocation, setClickedLocation] = React.useState(null);
+  const [modalDateVisible, setModalDateVisible] = React.useState(false);
+  const [modalHourVisible, setModalHourVisible] = React.useState(false);
+  const [map, setMap] = React.useState({});
+  const [filtered, setFiltered] = React.useState([]);
+  const [results, setResults] = React.useState([
+    { id: 1, title: "test 1", coords: { latitude: 37.7897442, longitude: -122.3972337 } },
+    { id: 2, title: "Transamerica pyramid 2", coords: { latitude: 37.7951775, longitude: -122.4027787 } },
+    { id: 3, title: "Sutro Tower", coords: { latitude: 37.7428201, longitude: -122.4701585 } },
+  ]);
+  const [searchText, setSearchText] = React.useState('');
 
   const getCurrentPosition = async () => {
 
@@ -62,22 +71,17 @@ const Home = (props) => {
 
   }
 
-  const getClasses = async (user_id) => {
+  const getScheduledClasses = async (user_id) => {
     console.log({ user_id })
-    let c = await ClassesController.getAllByUserId(user_id);
-    console.log({ new_classes: c.data.lessons })
-    await props.setClasses(c.data.lessons);
+    let c = await ClassesController.getAllScheduledByUserId(user_id);
+    // console.log({ new_classes: c.data.lessons })
+    // let scheduled = (c.data.lessons).filter(item => item.status == "scheduled");
+    let scheduled = c.data.scheduled_lessons;
+    console.log({ scheduled })
+    await props.setScheduledClasses(scheduled);
   }
 
-  React.useEffect(() => {
-    getClasses(props.user.id);
-    getCurrentPosition();
-    // console.log(props.user)
-  }, []);
 
-  const [modalDateVisible, setModalDateVisible] = React.useState(false);
-  const [modalHourVisible, setModalHourVisible] = React.useState(false);
-  const [newClass, setNewClass] = React.useState({ date: '', hour: '', });
 
   const handleSchedule = async () => {
 
@@ -100,10 +104,20 @@ const Home = (props) => {
     try {
 
       let response = await ClassesController.schedule(classToSchedule);
-      console.log({ lessons: response.data.lessons });
-      console.log({ classes_credits: response.data.classes_credits });
-      props.setClasses(response.data.lessons);
-      props.setClassesCredits(response.data.classes_credits);
+      if (!response.error) {
+        // console.log({ lessons: response.data.lessons });
+        console.log({ classes_credits: response.data.classes_credits });
+        let scheduled = (response.data.scheduled_lessons);
+        console.log({ scheduled })
+        await props.setScheduledClasses(scheduled);
+        await props.setClassesCredits(response.data.classes_credits);
+        Alert.alert("Parabéns!", "Sua aula foi agendada com sucesso!");
+      }
+      else {
+      Alert.alert("Erro", "Error: [" + response.error_code + "] - " +  response.error);
+
+      }
+
     } catch (error) {
       console.log({ error });
       Alert.alert("Erro", "Não foi possível agendar a aula. Tente novamente.");
@@ -112,9 +126,7 @@ const Home = (props) => {
 
   }
 
-  const [map, setMap] = React.useState({});
 
-  // const realignMap = () => map.fitToSuppliedMarkers(["origin", "destination"], {
   const realignMap = () => {
 
     setTimeout(() => {
@@ -124,13 +136,6 @@ const Home = (props) => {
     }, 1000);
   };
 
-  const [filtered, setFiltered] = React.useState([]);
-  const [results, setResults] = React.useState([
-    { id: 1, title: "test 1", coords: { latitude: 37.7897442, longitude: -122.3972337 } },
-    { id: 2, title: "Transamerica pyramid 2", coords: { latitude: 37.7951775, longitude: -122.4027787 } },
-    { id: 3, title: "Sutro Tower", coords: { latitude: 37.7428201, longitude: -122.4701585 } },
-  ]);
-  const [searchText, setSearchText] = React.useState('');
   const handleOnSearch = (text) => {
     if (text != "") setFiltered(results.filter(r => r.title.includes(text)));
     else setFiltered([]);
@@ -146,6 +151,13 @@ const Home = (props) => {
     realignMap();
     return true;
   }
+
+  React.useEffect(() => {
+    getScheduledClasses(props.user.id);
+    getCurrentPosition();
+    // console.log(props.user)
+  }, []);
+
 
   return (
     // <Styled.Container style={{ paddingTop: 0, backgroundColor: '#fff' }}>
@@ -165,17 +177,17 @@ const Home = (props) => {
       <ModalChoiceClassHour visible={modalHourVisible} setVisible={setModalHourVisible} />
 
       {
-        props.classes?.length > 0
+        props.scheduledClasses?.length > 0
         &&
         <View style={{ height: 110, width: "90%" }}>
           <Styled.SectionTitleTwo>Próximas aulas</Styled.SectionTitleTwo>
 
           <Styled.ClassesScrollHorizontal>
-            {props.classes && props.classes.map((c, index, arr) => {
+            {props.scheduledClasses && props.scheduledClasses.map((c, index, arr) => {
               let opacity = (((arr.length - (index + 1)) / arr.length) + (1 / arr.length));
               // console.log({c})
-              console.log(arr.length, "index: ", index)
-              if (c.status != "canceled")
+              // console.log(arr.length, "index: ", index)
+              if (c.status == "scheduled")
                 return (
                   <Styled.ClassBox key={c.id}>
                     <Styled.ClassBoxCircleContainer onPress={async () => {
@@ -364,6 +376,7 @@ const mapStateToProps = (state) => {
     //classes
     classes: state.classReducer.classes,
     newClass: state.classReducer.newClass,
+    scheduledClasses: state.classReducer.scheduledClasses,
 
     //consultations
     consultations: state.consultationReducer.consultations,
@@ -378,6 +391,7 @@ const mapDispatchToProps = (dispatch) => {
     setCurrentClass: (currentClass) => dispatch({ type: 'SET_CURRENT_CLASS', payload: { currentClass } }),
     setClasses: (classes) => dispatch({ type: 'SET_CLASSES', payload: { classes } }),
     setScheduledClass: (scheduledClass) => dispatch({ type: 'SET_SCHEDULED_CLASS', payload: { scheduledClass } }),
+    setScheduledClasses: (scheduledClasses) => dispatch({ type: 'SET_SCHEDULED_CLASSES', payload: { scheduledClasses } }),
     setClassesCredits: (classes_credits) => dispatch({ type: 'SET_CLASSES_CREDITS', payload: { classes_credits } }),
     //consultation
     setCurrentConsultation: (currentConsultation) => dispatch({ type: 'SET_CURRENT_CONSULTATION', payload: { currentConsultation } }),

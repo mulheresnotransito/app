@@ -28,18 +28,26 @@ import * as ClassesController from "../controllers/classes.controller";
 
 const Cancel = (props) => {
 
-  const [scheduledClass, setScheduledClass] = React.useState(props.scheduledClass);
 
   const handleCancel = async (classToCancel) => {
     if (!classToCancel.id || !classToCancel.id_user_client || !classToCancel.text) {
       Alert.alert("Oooops!", "Preencha todos os campos antes de cancelar a aula :)");
-      console.log({scheduledClass})
+      console.log({ scheduledClass: props.scheduledClass, classToCancel })
       return false;
     }
     try {
       let canceledClass = await ClassesController.cancel(classToCancel);
-      Alert.alert("Aula cancelada!", "A aula que estava agendada anteriormente foi cancelada.");
-      props.navigation.navigate("Home");
+      console.log({ canceledClass });
+
+      if (!canceledClass.error) {
+        props.setScheduledClasses(canceledClass.data.scheduled_lessons);
+        props.setClassesCredits(canceledClass.data.classes_credits);
+        props.setScheduledClass({});
+        Alert.alert("Aula cancelada!", "A aula que estava agendada anteriormente foi cancelada.");
+        props.navigation.navigate("Home");
+      } else {
+        Alert.alert("Erro", "Não foi possível cancelar a aula. Verifique os dados e tente novamente mais tarde.\nError code: " + canceledClass.error_code + " - " + canceledClass.error);
+      }
       return true;
     } catch (error) {
       console.log({ error });
@@ -49,8 +57,10 @@ const Cancel = (props) => {
 
   }
 
-  React.useEffect( () => {
-    console.log({initial: scheduledClass})
+  React.useEffect(() => {
+    if (!props.scheduledClass) {
+      props.navigation.goBack();
+    }
   }, []);
 
   return (
@@ -64,7 +74,7 @@ const Cancel = (props) => {
         </View>
 
         <Styled.TxtQuestion style={{ fontWeight: '500', fontSize: 14, color: "#D987A3", margin: 0, padding: 0, width: '90%', textAlign: 'left' }}>Conte para nós o motivo do cancelamento*</Styled.TxtQuestion>
-        <Styled.TxtInput defaultValue={scheduledClass?.text} onChangeText={(e) => setScheduledClass({ ...scheduledClass, text: e })} placeholder="Escreva aqui..." />
+        <Styled.TxtInput defaultValue={props.scheduledClass?.text} onChangeText={(e) => props.setScheduledClass({ ...props.scheduledClass, text: e })} placeholder="Escreva aqui..." />
 
         <Styled.TxtQuestion style={{ fontWeight: '500', fontSize: 14, color: "#D987A3", margin: 0, padding: 0, width: '90%', textAlign: 'left', marginVertical: 10 }}>Ficou doente e tem atestado?</Styled.TxtQuestion>
 
@@ -73,7 +83,7 @@ const Cancel = (props) => {
           <Styled.Illustration source={camera} style={{ width: 25, height: 21.88, marginHorizontal: 3, }} />
         </TouchableOpacity>
 
-        <Styled.BtnCTA2 onPress={() => handleCancel(scheduledClass)} style={{ marginTop: 50 }}>
+        <Styled.BtnCTA2 onPress={() => handleCancel(props.scheduledClass)} style={{ marginTop: 50 }}>
           <Styled.TxtBtnCTA2>CANCELAR AULA</Styled.TxtBtnCTA2>
         </Styled.BtnCTA2>
 
@@ -101,7 +111,8 @@ const mapStateToProps = (state) => {
     modalInfoVisible: state.modalReducer.modalInfoVisible,
 
     //class
-    scheduledClass: state.classReducer.scheduledClass
+    scheduledClass: state.classReducer.scheduledClass,
+    scheduledClasses: state.classReducer.scheduledClasses,
   }
 };
 
@@ -109,6 +120,11 @@ const mapDispatchToProps = (dispatch) => {
   return {
     //modal
     setModalInfoVisible: (modalInfoVisible) => dispatch({ type: 'SET_MODAL_INFO_VISIBLE', payload: { modalInfoVisible } }),
+    //class
+    setClasses: (classes) => dispatch({ type: 'SET_CLASSES', payload: { classes } }),
+    setClassesCredits: (classes_credits) => dispatch({ type: 'SET_CLASSES_CREDITS', payload: { classes_credits } }),
+    setScheduledClass: (scheduledClass) => dispatch({ type: 'SET_SCHEDULED_CLASS', payload: { scheduledClass } }),
+    setScheduledClasses: (scheduledClasses) => dispatch({ type: 'SET_SCHEDULED_CLASSES', payload: { scheduledClasses } }),
   }
 };
 

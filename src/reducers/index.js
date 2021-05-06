@@ -6,6 +6,7 @@ import classReducer from './class.reducer';
 import consultationReducer from './consultation.reducer';
 import noticeReducer from './notice.reducer';
 import creditReducer from './credit.reducer';
+import menuReducer from './menu.reducer';
 
 export default combineReducers({
   userReducer,
@@ -14,4 +15,5 @@ export default combineReducers({
   consultationReducer,
   noticeReducer,
   creditReducer,
+  menuReducer,
 });

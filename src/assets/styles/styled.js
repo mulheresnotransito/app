@@ -428,6 +428,13 @@ export const Illustration = styled.Image`
   height: ${props => 1082 * 0.3 + "px"};
 `;
 
+export const ActiveFooterIcon = styled.Image`
+  tint-color: #bb3f62
+`;
+export const InactiveFooterIcon = styled.Image`
+  tint-color: #da88a5
+`;
+
 export const BtnQuick = styled.TouchableOpacity`
 
 `;

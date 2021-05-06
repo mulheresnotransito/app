@@ -1,5 +1,6 @@
 const initialState = {
   classes: [],
+  scheduledClasses: [],
   currentClass: {},
   scheduledClass: {},
   newClass: {},
@@ -17,6 +18,9 @@ export default (state = initialState, action) => {
       break;
     case 'SET_SCHEDULED_CLASS':
       return { ...state, scheduledClass: action.payload.scheduledClass };
+      break;
+    case 'SET_SCHEDULED_CLASSES':
+      return { ...state, scheduledClasses: action.payload.scheduledClasses };
       break;
     case 'SET_NEW_CLASS':
       return { ...state, newClass: action.payload.newClass };

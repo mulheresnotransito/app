@@ -7,7 +7,9 @@ export const getAll = async () => {
       return { status: true, data: response.data }
     })
     .catch(error => {
-      return { error: error.response.data.message, status: false }
+      let data = error.response.data;
+      console.log({error: data.error, error_code: data.error_code})
+      return { error: data.error, error_code: data.error_code, status: false }
     });
 
 };
@@ -19,7 +21,23 @@ export const getAllByUserId = async (user_id) => {
       return { status: true, data: response.data }
     })
     .catch(error => {
-      return { error: error.response.data.message, status: false }
+      let data = error.response.data;
+      console.log({error: data.error, error_code: data.error_code})
+      return { error: data.error, error_code: data.error_code, status: false }
+    });
+
+};
+
+export const getAllScheduledByUserId = async (user_id) => {
+
+  return axios.post('/lessons/get_all_scheduled_by_id_user_client', { user_id })
+    .then(response => {
+      return { status: true, data: response.data }
+    })
+    .catch(error => {
+      let data = error.response.data;
+      console.log({error: data.error, error_code: data.error_code})
+      return { error: data.error, error_code: data.error_code, status: false }
     });
 
 };
@@ -32,7 +50,9 @@ export const schedule = async (params) => {
       return { status: true, data: response.data }
     })
     .catch(error => {
-      return { error: error.response.data.message, status: false }
+      let data = error.response.data;
+      console.log({error: data.error, error_code: data.error_code})
+      return { error: data.error, error_code: data.error_code, status: false }
     });
 
 };
@@ -45,7 +65,9 @@ export const cancel = async (lesson) => {
       return { status: true, data: response.data }
     })
     .catch(error => {
-      return { error: error.response.data.message, status: false }
+      let data = error.response.data;
+      console.log({error: data.error, error_code: data.error_code})
+      return { error: data.error, error_code: data.error_code, status: false }
     });
 
 };
@@ -57,7 +79,9 @@ export const getDefaultAvailableTimes = async () => {
       return { status: true, data: response.data }
     })
     .catch(error => {
-      return { error: error.response.data.message, status: false }
+      let data = error.response.data;
+      console.log({error: data.error, error_code: data.error_code})
+      return { error: data.error, error_code: data.error_code, status: false }
     });
 
 };
