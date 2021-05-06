@@ -100,7 +100,7 @@ const ExternalProfile = (props) => {
         </View>
 
         <View style={{ width: '95%' }}>
-          {(btnActive == 'next-hours' && props.classes) && props.classes.map(nextHour => {
+          {(btnActive == 'next-hours' && props.classes) && props.classes?.map(nextHour => {
 
             nextHour.date = new Date(nextHour.date);
 
@@ -125,7 +125,7 @@ const ExternalProfile = (props) => {
             );
           }
           )}
-          {(btnActive == 'history' && props.classes) && props.classes.map(nextHour => {
+          {(btnActive == 'history' && props.classes) && props.classes?.map(nextHour => {
 
             nextHour.date = new Date(nextHour.date);
 

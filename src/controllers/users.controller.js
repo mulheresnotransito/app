@@ -36,3 +36,16 @@ export const register = async (user) => {
     });
 
 };
+
+
+export const buyClassesCredits = async (paymentInfo, user, newCredits) => {
+
+  return axios.post('/users/buy_classes_credits', { paymentInfo, user, newCredits })
+    .then(response => {
+      return { status: true, data: response.data }
+    })
+    .catch(error => {
+      return { error: error.response.data.message, status: false }
+    });
+
+};

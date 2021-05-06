@@ -79,15 +79,37 @@ const Home = (props) => {
   const [modalHourVisible, setModalHourVisible] = React.useState(false);
   const [newClass, setNewClass] = React.useState({ date: '', hour: '', });
 
-  const handleSchedule = () => {
+  const handleSchedule = async () => {
 
     if (!props.newClass?.date || !props.newClass?.hour) {
       Alert.alert("Oooops!", "Preencha todas as informações antes de agendar a aula.");
+      return false;
     } else if (props.user?.classes_credits <= 0) {
       Alert.alert("Oooops!", "Você não tem créditos para agendar a aula.", [
         { text: "COMPRAR CRÉDITOS", onPress: () => { props.navigation.navigate('BuyClassesCredits') } }
       ]);
+      return false;
     }
+    let classToSchedule = props.newClass;
+    classToSchedule = {
+      ...classToSchedule,
+      id_default_time: classToSchedule.hour.id,
+      id_user_client: props.user.id
+    };
+
+    try {
+
+      let response = await ClassesController.schedule(classToSchedule);
+      console.log({ lessons: response.data.lessons });
+      console.log({ classes_credits: response.data.classes_credits });
+      props.setClasses(response.data.lessons);
+      props.setClassesCredits(response.data.classes_credits);
+    } catch (error) {
+      console.log({ error });
+      Alert.alert("Erro", "Não foi possível agendar a aula. Tente novamente.");
+      return false;
+    }
+
   }
 
   const [map, setMap] = React.useState({});
@@ -138,47 +160,50 @@ const Home = (props) => {
       }}>
       <Header screenTitle="Home" client navigation={props.navigation} />
 
+
       <ModalChoiceClassDate visible={modalDateVisible} setVisible={setModalDateVisible} />
       <ModalChoiceClassHour visible={modalHourVisible} setVisible={setModalHourVisible} />
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalIsVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>Informações da aula</Text>
-            <Text style={styles.modalText}>Motorista: {clickedClass.driver_name}</Text>
-            <Text style={styles.modalText}>E-mail do motorista: {clickedClass.driver_email}</Text>
-            <Text style={styles.modalText}>Ponto de encontro: {clickedClass.starting_point}</Text>
-            <Text style={styles.modalText}>Status: {clickedClass.status}</Text>
-            <Text style={styles.modalText}>Data: {clickedClass.date}</Text>
-            <TouchableHighlight
-              underlayColor="#f5c0d0"
-              style={{ ...styles.openButton, backgroundColor: '#C43A57' }}
-              onPress={() => {
-                setModalIsVisible(!modalIsVisible);
-              }}>
-              <Text style={styles.textStyle}>Fechar</Text>
-            </TouchableHighlight>
-          </View>
+      {
+        props.classes?.length > 0
+        &&
+        <View style={{ height: 110, width: "90%" }}>
+          <Styled.SectionTitleTwo>Próximas aulas</Styled.SectionTitleTwo>
+
+          <Styled.ClassesScrollHorizontal>
+            {props.classes && props.classes.map((c, index, arr) => {
+              let opacity = (((arr.length - (index + 1)) / arr.length) + (1 / arr.length));
+              // console.log({c})
+              console.log(arr.length, "index: ", index)
+              if (c.status != "canceled")
+                return (
+                  <Styled.ClassBox key={c.id}>
+                    <Styled.ClassBoxCircleContainer onPress={async () => {
+                      setClickedClass(c)
+                      await props.setScheduledClass(c)
+                      props.navigation.navigate("Confirmation");
+                      // setModalIsVisible(true)
+                    }
+                    }
+                      activeOpacity={0.7}
+                      style={{ backgroundColor: 'rgba(196, 58, 87, ' + opacity + ')' }} key={c.id}>
+                      <Styled.ClassBoxCircleDay>{(c.date)?.split("/")[0] || ""}</Styled.ClassBoxCircleDay>
+                      <Styled.ClassBoxCircleMonth>{(functions.getMonthName(parseInt((c.date).split("/")[1])))}</Styled.ClassBoxCircleMonth>
+                    </Styled.ClassBoxCircleContainer>
+                  </Styled.ClassBox>
+                );
+            })}
+          </Styled.ClassesScrollHorizontal>
         </View>
-      </Modal>
+      }
 
       <Styled.MapContainer>
-        {
-          props.classes?.length > 0
-          &&
-          <Styled.SectionTitleTwo>Próximas aulas</Styled.SectionTitleTwo>
-        }
         {
           (props.user?.is_psychologist || props.user?.is_driver) && <Styled.TextAlert>Essa tela é visível apenas para o cliente</Styled.TextAlert>
         }
 
-        <View style={{ flex: 1, paddingBottom: 20, width: '100%', height: Dimensions.get('window').height - 200, alignItems: 'center', justifyContent: 'flex-end', }}>
+        <View style={{ flex: 1, paddingBottom: 20, width: '100%', /*height: Dimensions.get('window').height - 200, */ alignItems: 'center', justifyContent: 'flex-end', }}>
+
 
           {location && <View style={StyleSheet.absoluteFillObject}>
 
@@ -215,34 +240,16 @@ const Home = (props) => {
             </MapView>
 
           </View>}
-          <Styled.ScrollHorizontal style={{ height: 50 }} contentContainerStyle={{ flexDirection: "column", alignItems: 'flex-start', justifyContent: 'flex-start' }}>
-            {props.classes && props.classes.map((c, index, arr) => {
-              let opacity = (((arr.length - (index + 1)) / arr.length) + (1 / arr.length));
-              console.log({c})
-              if (c.status != "canceled")
-                return (
-                  <Styled.ClassBox key={c.id}>
 
-                    <Styled.ClassBoxCircleContainer onPress={async () => {
-                      setClickedClass(c)
-                      await props.setScheduledClass(c)
-                      props.navigation.navigate("Confirmation");
-                      // setModalIsVisible(true)
-                    }
-                    }
-                      activeOpacity={0.7}
-                      style={{ backgroundColor: 'rgba(196, 58, 87, ' + opacity + ')' }} key={c.id}>
-                      <Styled.ClassBoxCircleDay>{(c.date).split("/")[0]}</Styled.ClassBoxCircleDay>
-                      <Styled.ClassBoxCircleMonth>{(functions.getMonthName(parseInt((c.date).split("/")[1])))}</Styled.ClassBoxCircleMonth>
-                    </Styled.ClassBoxCircleContainer>
-                  </Styled.ClassBox>
-                );
-            })}
-          </Styled.ScrollHorizontal>
+          <View style={{ flexDirection: 'column', width: '90%', marginVertical: 5, marginHorizontal: 0, borderRadius: 10, backgroundColor: "#fff", padding: 10, }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'nowrap', marginBottom: -15 }}>
+              <Styled.Illustration source={dotCircle} style={{ width: 20, height: 20, marginRight: 3 }} />
+              <Styled.SectionTitle style={{ textAlign: 'left', fontWeight: 'bold', fontSize: 16, width: '100%', margin: 0 }}>Onde nos encontramos?</Styled.SectionTitle>
+            </View>
+            <Styled.TxtInput style={{ width: '90%', margin: 0, fontSize: 14 }} value={searchText} onChangeText={(e) => setSearchText(handleOnSearch(e))} placeholder="Digite o local aqui..." />
+          </View>
 
           <View style={{ flex: 2 }} />
-          <View style={{ flex: 2 }} />
-          <View style={{ flex: 3 }} />
 
           {/* <GooglePlacesAutocomplete
             styles={{ container: { backgroundColor: "green", height: 50, width: "90%", marginVertical: 5 } }}
@@ -259,14 +266,6 @@ const Home = (props) => {
               language: 'en',
             }}
           /> */}
-
-          <View style={{ flexDirection: 'column', width: '90%', marginVertical: 3, marginHorizontal: 0, borderRadius: 10, backgroundColor: "#fff", padding: 10, }}>
-            <View style={{ flexDirection: 'row', flexWrap: 'nowrap', marginBottom: -15 }}>
-              <Styled.Illustration source={dotCircle} style={{ width: 20, height: 20, marginRight: 3 }} />
-              <Styled.SectionTitle style={{ textAlign: 'left', fontWeight: 'bold', fontSize: 16, width: '100%', margin: 0 }}>Onde nos encontramos?</Styled.SectionTitle>
-            </View>
-            <Styled.TxtInput style={{ width: '90%', margin: 0, fontSize: 14 }} value={searchText} onChangeText={(e) => setSearchText(handleOnSearch(e))} placeholder="Digite o local aqui..." />
-          </View>
 
           <View style={{ width: "90%", backgroundColor: "#FFF" }}>
             {filtered && filtered.map(result => {
@@ -379,6 +378,7 @@ const mapDispatchToProps = (dispatch) => {
     setCurrentClass: (currentClass) => dispatch({ type: 'SET_CURRENT_CLASS', payload: { currentClass } }),
     setClasses: (classes) => dispatch({ type: 'SET_CLASSES', payload: { classes } }),
     setScheduledClass: (scheduledClass) => dispatch({ type: 'SET_SCHEDULED_CLASS', payload: { scheduledClass } }),
+    setClassesCredits: (classes_credits) => dispatch({ type: 'SET_CLASSES_CREDITS', payload: { classes_credits } }),
     //consultation
     setCurrentConsultation: (currentConsultation) => dispatch({ type: 'SET_CURRENT_CONSULTATION', payload: { currentConsultation } }),
   }

@@ -1,6 +1,5 @@
 import styled from 'styled-components/native';
 
-
 export const BtnCTA = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
@@ -288,7 +287,7 @@ export const Container = styled.View`
 `;
 
 export const MapContainer = styled.View`
-  flex: 1;
+  flex: 2;
   justify-content: flex-start;
   align-items: center;
   width: 100%;
@@ -322,13 +321,20 @@ export const ScrollContainer = styled.ScrollView.attrs(props => ({
 `;
 
 export const ScrollHorizontal = styled.ScrollView.attrs(props => ({
-  contentContainerStyle: { alignItems: 'center', justifyContent: "flex-start" },
+  // contentContainerStyle: { alignItems: 'flex-start', justifyContent: "flex-start" },
   showsHorizontalScrollIndicator: false,
   horizontal: true
 }))`
-  /* border-top-left-radius: 50px; */
-  /* border-top-right-radius: 50px; */
   margin: 10px 0px;
+  width: 100%;
+`;
+
+export const ClassesScrollHorizontal = styled.ScrollView.attrs(props => ({
+  // contentContainerStyle: { alignItems: 'center', justifyContent: "flex-start", backgroundColor: "green" },
+  showsHorizontalScrollIndicator: false,
+  horizontal: true
+}))`
+  margin: 5px 0px;
   width: 100%;
 `;
 
@@ -337,7 +343,7 @@ export const HeaderContainer = styled.View`
   justify-content: center;
   align-items: center;
   /* background-color: #efefef; */
-  margin: 30px 0px 10px 0px;
+  margin: 40px 0px 15px 0px;
   padding: 5px 0px;
   width: 90%;
 `;
@@ -508,6 +514,30 @@ export const TxtInput = styled.TextInput.attrs(props => ({
   border-color: #C43A57;
 `;
 
+export const CheckoutInput = styled.TextInput.attrs(props => ({
+  placeholderTextColor: "#E46788"
+}))`
+  width: 90%;
+  height: 40px;
+  padding: 0px 0px;
+  margin: 5px 0px;
+  font-size: 16px;
+  border-bottom-width: 1px;
+  border-color: #C43A57;
+`;
+
+export const CheckoutInputTwo = styled.TextInput.attrs(props => ({
+  placeholderTextColor: "#E46788"
+}))`
+  flex:1;
+  height: 40px;
+  padding: 0px 0px;
+  margin: 5px 0px;
+  font-size: 16px;
+  border-bottom-width: 1px;
+  border-color: #C43A57;
+`;
+
 export const TxtInput1 = styled.TextInput.attrs(props => ({
   placeholderTextColor: "#E46788"
 }))`
@@ -520,6 +550,7 @@ export const TxtInput1 = styled.TextInput.attrs(props => ({
   border-bottom-width: 1px;
   border-color: #C43A57;
 `;
+
 export const BtnBack = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
@@ -535,9 +566,8 @@ export const TxtBtnBack = styled.Text`
 `;
 
 export const ClassBox = styled.TouchableOpacity`
-  width: 75px;
-  height: 75px;
-  /* border: 4px solid #aeaeae;  */
+  width: 65px;
+  height: 65px;
   border: 1px solid #aeaeae;  
   border-radius: 50px;
   margin: 0px 3px;
@@ -551,8 +581,8 @@ export const ClassBoxCircleContainer = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   background-color: #C43A57;
-  width: 66px;
-  height: 66px;
+  width: 56px;
+  height: 56px;
   border-radius: 50px;
   padding: 0;
 `;
@@ -744,6 +774,21 @@ export const TxtQuestion = styled.Text`
   color: #C43A57;
   text-align: center;
   width: 100%;
+`;
+
+export const BoxTitle = styled.View`
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 90%;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const TxtSecondaryTitle = styled.Text`
+  font-size: 16px;
+  font-weight: 700;
+  color: #C43A57;
+  text-align: center;
 `;
 
 export const TxtNewsTitle = styled.Text`

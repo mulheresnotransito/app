@@ -64,6 +64,12 @@ export default (state = initialState, action) => {
     case 'SET_IS_LOGIN':
       return { ...state, isLogin: action.payload.isLogin };
       break;
+    case 'SET_CLASSES_CREDITS':
+      return { ...state, classes_credits: action.payload.classes_credits };
+      break;
+    case 'SET_CONSULTATIONS_CREDITS':
+      return { ...state, consultations_credits: action.payload.consultations_credits };
+      break;
     case 'SET_CURRENT_SCREEN':
       return { ...state, currentScreen: action.payload.currentScreen };
       break;

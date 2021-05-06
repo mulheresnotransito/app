@@ -7,8 +7,11 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Switch,
+  Alert
 } from 'react-native';
+import { TextInputMask } from 'react-native-masked-text'
 
 import { connect } from 'react-redux';
 
@@ -20,36 +23,38 @@ import creditCard from '../assets/icons/credit-card.png';
 import * as Styled from '../assets/styles/styled';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import * as UsersController from "../controllers/users.controller";
 
 const ChoiceCard = (props) => {
 
-  const [userToLogin, setUserToLogin] = React.useState({
-    email: '',
-    password: ''
+  const [saveCard, setSaveCard] = React.useState(false);
+  const [paymentInfo, setPaymentInfo] = React.useState({
+    creditCard: { number: "", expiration_date: "", security_code: "", client_name: "" },
+    newCredits: props.newCredits
   });
-
-  const loginUser = (user) => {
-    // if(user.email == 'teste@hinoselouvores.com' && user.password == '123456')
-    //   navigation.navigate('Home');
-    // else
-    //   Alert.alert('Erro', 'Usuário ou senha incorretos');
-    props.navigation.navigate('Market');
+  const toggleSwitch = () => setSaveCard(previousState => !previousState);
+  const handleBuy = async (buyInfo) => {
+    console.log(buyInfo)
+    try {
+      if (!buyInfo.creditCard.number || !buyInfo.creditCard.expiration_date || !buyInfo.creditCard.security_code || !buyInfo.creditCard.client_name) {
+        Alert.alert("Erro", "Preencha todos os campos.");
+        return false;
+      }
+      let response = await UsersController.buyClassesCredits(paymentInfo, props.user, paymentInfo.newCredits);
+      props.setClassesCredits(response.data.user.classes_credits);
+      Alert.alert("Parabéns!", "Créditos comprados com sucesso!");
+      props.navigation.navigate("Home");
+    } catch (error) {
+      console.log({ error });
+      Alert.alert("Erro", "Não foi possível efetuar sua compra. Tente novamente.");
+      return false;
+    }
   }
 
-  const [info, setInfo] = React.useState(props.route.params);
   React.useEffect(() => {
-    // console.log({ props })
-    setInfo(props.route.params);
-  }, [props.route.params]);
+    if (!props.newCredits) props.navigation.navigate("Home");
+  }, []);
 
-  const [modal, setModal] = React.useState({ title: "Em desenvolvimento", desc: "Esta função que você tentou acessar ainda está em desenvolvimento" });
-
-  const [classes, setClasses] = React.useState([
-    { id: 1, title: "1 aula", description: "R$65,00", active: true },
-    { id: 2, title: "5 aulas", description: "R$320,00 (em até 2x no cartão de crédito)", active: false },
-    { id: 3, title: "10 aulas", description: "R$630,00 (em até 3x no cartão de crédito)", active: false },
-    { id: 4, title: "15 aulas", description: "R$930,00 (em até 4x no cartão de crédito)", active: false },
-  ]);
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
       <Header screenTitle="Home" client navigation={props.navigation} />
@@ -57,31 +62,66 @@ const ChoiceCard = (props) => {
       {/* <Styled.Scroll> */}
       <Styled.ScrollContainer>
 
-        <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '90%', alignItems: 'center', justifyContent: 'center'}}>
+        <Styled.BoxTitle>
           <Styled.Illustration source={creditCard} style={{ width: 25, height: 19.44, marginHorizontal: 3, }} />
-          <Styled.TxtQuestion style={{flex: 1, textAlign: 'center'}}>Insira os dados do seu cartão</Styled.TxtQuestion>
-        </View>
+          <Styled.TxtSecondaryTitle>Insira os dados do seu cartão</Styled.TxtSecondaryTitle>
+        </Styled.BoxTitle>
 
         <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
-          <Styled.TxtInput placeholder="Nome do titular" />
-          <Styled.TxtInput placeholder="Número do cartão" />
-          <Styled.TxtInput placeholder="Repetir senha" />
-          <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '95%', justifyContent: 'center', alignItems: 'space-between', marginVertical: 20 }}>
-            <Styled.TxtInput1 placeholder="Validade" />
-            <Styled.TxtInput1 placeholder="CVV" />
+          <Styled.CheckoutInput onChangeText={(e) => setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, client_name: e } })} placeholder="Nome do titular" />
+          <TextInputMask
+            type={'credit-card'}
+            value={paymentInfo.creditCard.number}
+            onChangeText={text => {
+              setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, number: text } });
+            }}
+            placeholder="Número do cartão"
+            placeholderTextColor="#E46788"
+            style={styles.inputStyle}
+          />
+
+
+          <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '90%', justifyContent: 'center', alignItems: 'space-between' }}>
+
+            <TextInputMask
+              type={'custom'}
+              value={paymentInfo.creditCard.expiration_date}
+              options={{ mask: "99/99" }}
+              onChangeText={text => {
+                setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, expiration_date: text } });
+              }}
+              placeholder="Validade"
+              placeholderTextColor="#E46788"
+              style={{ ...styles.inputStyle, marginRight: 5, flex: 1 }}
+            />
+            <TextInputMask
+              type={'custom'}
+              value={paymentInfo.creditCard.security_code}
+              options={{ mask: "999" }}
+              onChangeText={text => {
+                setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, security_code: text } });
+              }}
+              placeholder="CVV"
+              placeholderTextColor="#E46788"
+              style={{ ...styles.inputStyle, marginLeft: 5, flex: 1 }}
+            />
+
           </View>
-          <View style={{ width: '90%', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'center' }}>
-            <Styled.TxtQuestion style={{ fontWeight: '500', fontSize: 14, color: "#D987A3", margin: 0, padding: 0, flex: 1 }}>Guardar dados do cartão?</Styled.TxtQuestion>
-            <View style={{ padding: 5, paddingHorizontal: 10, borderRadius: 5, backgroundColor: '#D987A3', marginHorizontal: 5 }}>
-              <Text>SIM</Text>
-            </View>
-            <View style={{ padding: 5, paddingHorizontal: 10, borderRadius: 5, backgroundColor: '#ccc', marginHorizontal: 5 }}>
-              <Text>NÃO</Text>
-            </View>
+
+          <View style={{ width: '90%', flexDirection: 'row', flexWrap: 'nowrap', flex: 1, alignItems: 'center', justifyContent: 'space-between' }}>
+            <Styled.TxtQuestion style={{ fontWeight: '500', fontSize: 14, color: "#D987A3", margin: 0, padding: 0, flex: 1, textAlign: "left" }}>Guardar dados do cartão?</Styled.TxtQuestion>
+            <Switch
+              trackColor={{ false: "#555", true: "#a22341" }}
+              thumbColor={saveCard ? "#fff" : "#aaa"}
+              ios_backgroundColor="#777"
+
+              onValueChange={toggleSwitch}
+              value={saveCard}
+            />
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '90%', justifyContent: 'center', alignItems: 'center', marginVertical: 20 }}>
             <Styled.TxtQuestion style={{ fontWeight: '400', fontSize: 16, color: "#C43A57", margin: 0, padding: 0, flex: 1, textAlign: 'right' }}>Valor total: R$</Styled.TxtQuestion>
-            <Styled.TxtQuestion style={{ fontWeight: '800', fontSize: 28, color: "#C43A57", margin: 0, padding: 0, flex: 1, textAlign: 'left' }}>65,00</Styled.TxtQuestion>
+            <Styled.TxtQuestion style={{ fontWeight: '800', fontSize: 26, color: "#C43A57", margin: 0, padding: 0, flex: 1, textAlign: 'left' }}>{(props.newCredits?.price).substr(2)}</Styled.TxtQuestion>
           </View>
 
         </View>
@@ -93,7 +133,7 @@ const ChoiceCard = (props) => {
           </Styled.BtnCTA2>
         </View>
 
-        <Styled.BtnCTA2 onPress={() => props.navigation.navigate('Confirmation')}>
+        <Styled.BtnCTA2 onPress={() => handleBuy(paymentInfo)}>
           <Styled.TxtBtnCTA2>FINALIZAR</Styled.TxtBtnCTA2>
         </Styled.BtnCTA2>
         {/* </Styled.Scroll> */}
@@ -103,10 +143,20 @@ const ChoiceCard = (props) => {
   );
 };
 
+const styles = StyleSheet.create({
+  inputStyle: { width: "90%", height: 40, marginVertical: 5, borderBottomColor: "#C43A57", borderBottomWidth: 1, fontSize: 16, color: "#999" }
+});
+
 const mapStateToProps = (state) => {
   return {
     //modal
     modalInfoVisible: state.modalReducer.modalInfoVisible,
+
+    //credit
+    newCredits: state.creditReducer.newCredits,
+
+    //user
+    user: state.userReducer,
   }
 };
 
@@ -114,6 +164,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     //modal
     setModalInfoVisible: (modalInfoVisible) => dispatch({ type: 'SET_MODAL_INFO_VISIBLE', payload: { modalInfoVisible } }),
+
+    //classes
+    setClassesCredits: (classes_credits) => dispatch({ type: 'SET_CLASSES_CREDITS', payload: { classes_credits } }),
   }
 };
 
