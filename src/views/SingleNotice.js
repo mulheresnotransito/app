@@ -16,10 +16,6 @@ import { connect } from 'react-redux';
 import { Ionicons } from 'react-native-vector-icons';
 
 //
-import like from '../assets/icons/like-2.png';
-import whatsapp from '../assets/icons/whatsapp.png';
-import dotCircle from '../assets/icons/dot-circle.png';
-import comment from '../assets/icons/comment.png';
 import share from '../assets/icons/share.png';
 import profilePic from '../assets/images/profile-pic-1.png';
 import image from '../assets/images/image-1.png';
@@ -37,20 +33,27 @@ const SingleNotice = (props) => {
       <Header screenTitle="Home" client navigation={props.navigation} />
 
       <Styled.ScrollContainer>
-        <TouchableOpacity onPress={() => props.navigation.navigate("News")} style={{ width: '95%' }}>
+        {/* <TouchableOpacity onPress={() => props.navigation.navigate("News")} style={{ width: '95%' }}>
           <Text style={{ color: "#C43A57" }}>Voltar</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {props.currentNotice && (
           <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
             <Styled.Illustration source={image} style={{ width: '100%', height: 300, marginVertical: 5 }} />
-            <Styled.TxtQuestion style={{ marginVertical: 5, fontSize: 14, width: '92%' }}>{props.currentNotice.title}</Styled.TxtQuestion>
+            <Styled.TxtQuestion style={{ marginVertical: 5, fontSize: 14, width: '92%', textAlign: "left" }}>{props.currentNotice.title}</Styled.TxtQuestion>
             {/* <Styled.TxtQuestion style={{ marginBottom: 5, fontSize: 14, width: '90%', fontWeight: '300', textAlign: 'justify' }}>{props.currentNotice.description}</Styled.TxtQuestion> */}
             <Styled.TxtQuestion style={{ color: '#555', marginBottom: 5, fontSize: 14, width: '90%', fontWeight: '300', textAlign: 'justify' }}>{props.currentNotice.text}</Styled.TxtQuestion>
           </View>
         )
         }
 
+        <Styled.LikeComponent>
+          <Styled.LikeComponentColumn>
+            <Styled.LikeComponentText>Gostou do post?</Styled.LikeComponentText>
+            <Styled.LikeComponentText>Compartilhe com os amigos!</Styled.LikeComponentText>
+          </Styled.LikeComponentColumn>
+          <Styled.Illustration source={share} style={{ tintColor: "#eeaabe", height: 23, width: 20}} />
+        </Styled.LikeComponent>
 
       </Styled.ScrollContainer>
       <Footer screenTitle="Home" client navigation={props.navigation} />

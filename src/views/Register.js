@@ -31,7 +31,7 @@ const Register = (props) => {
     email: '',
     password: '',
     confirmPassword: '',
-    is_client: true
+    is_client: 1
   });
 
   const handleRegister = async (user) => {
@@ -41,28 +41,37 @@ const Register = (props) => {
     }
     else {
       try {
-        let data = (await UsersController.register(user)).data.user;
-        await props.login(data);
-        Alert.alert('Cadastrado!', 'Cadastro efetuado com sucesso :)', [
-          {
-            text: 'OK', onPress: () => {
-              props.navigation.navigate('Home');
-              setUserToRegister({
-                first_name: '',
-                last_name: '',
-                email: '',
-                password: '',
-                confirmPassword: '',
-                is_client: true
-              });
+        let data = (await UsersController.register(user));
+        console.log({ data })
+
+        if (!data.error) {
+          await props.login(data.data.user);
+          Alert.alert('Cadastrado!', 'Cadastro efetuado com sucesso :)', [
+            {
+              text: 'OK', onPress: () => {
+                props.navigation.navigate('Home');
+                setUserToRegister({
+                  first_name: '',
+                  last_name: '',
+                  email: '',
+                  password: '',
+                  confirmPassword: '',
+                  is_client: 1
+                });
+              }
             }
-          }
-        ]);
-        return true;
+          ]);
+          return true;
+        }
+        else {
+          Alert.alert('Erro', 'Não foi possível efetuar seu cadastro :(\n[' + data.error_code + '] - ' + data.error + ' \n\nTente novamente');
+          return false;
+        }
       }
       catch (e) {
         console.log(e);
         Alert.alert('Erro', 'Não foi possível efetuar seu cadastro :(\n\nTente novamente');
+        return false;
       }
     }
   }
@@ -87,8 +96,8 @@ const Register = (props) => {
           <Styled.TxtInput1 value={userToRegister.last_name} placeholder="Sobrenome" onChangeText={(t) => setUserToRegister({ ...userToRegister, last_name: t })} />
         </View>
         <Styled.TxtInput value={userToRegister.email} placeholder="E-mail" onChangeText={(t) => setUserToRegister({ ...userToRegister, email: t })} />
-        <Styled.TxtInput value={userToRegister.password} placeholder="Senha" secureTextEntry onChangeText={(t) => setUserToRegister({ ...userToRegister, password: t })} />
-        <Styled.TxtInput value={userToRegister.confirmPassword} placeholder="Repetir senha" secureTextEntry onChangeText={(t) => setUserToRegister({ ...userToRegister, confirmPassword: t })} />
+        <Styled.TxtInput secureTextEntry value={userToRegister.password} placeholder="Senha" onChangeText={(t) => setUserToRegister({ ...userToRegister, password: t })} />
+        <Styled.TxtInput secureTextEntry value={userToRegister.confirmPassword} placeholder="Repetir senha" onChangeText={(t) => setUserToRegister({ ...userToRegister, confirmPassword: t })} />
         <Styled.BtnCTA onPress={() => handleRegister(userToRegister)}>
           <Styled.TxtBtnCTA>CRIAR CONTA</Styled.TxtBtnCTA>
         </Styled.BtnCTA>
@@ -117,11 +126,14 @@ const mapDispatchToProps = (dispatch) => {
     //user logout
     logout: () => dispatch({ type: 'LOGOUT', payload: {} }),
     //user login
-    login: ({ id, profile_photo, email, first_name, last_name, birthday, sex, language, country, is_client, is_psychologist, is_drive, signature_status, signature_expiration_date, classes_credits, consultations_credits }) => dispatch({
+    login: ({ id, profile_photo, email, first_name, last_name, birthday, sex, language, country, is_client, is_psychologist, is_driver, signature_status, signature_expiration_date, classes_credits, consultations_credits }) => dispatch({
       type: 'LOGIN', payload: {
-        id, profile_photo, email, first_name, last_name, birthday, sex, language, country, is_client, is_psychologist, is_drive, signature_status, signature_expiration_date, classes_credits, consultations_credits
+        id, profile_photo, email, first_name, last_name, birthday, sex, language, country, is_client, is_psychologist, is_driver, signature_status, signature_expiration_date, classes_credits, consultations_credits
       }
     }),
+    setClasses: (classes) => dispatch({ type: 'SET_CLASSES', payload: { classes } }),
+    setConsultations: (consultations) => dispatch({ type: 'SET_CONSULTATIONS', payload: { consultations } }),
+
   }
 };
 

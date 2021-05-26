@@ -1,29 +1,14 @@
 import React from 'react';
 import {
   View,
-  StatusBar,
-  Image,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
-  TouchableHighlight,
-  ScrollView,
-  Dimensions,
-  ImageBackground,
-  RefreshControl,
-  Modal,
   Alert,
-  KeyboardAvoidingView,
-  Pressable
 } from 'react-native';
 import { connect } from 'react-redux';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
-
-import { Ionicons } from '@expo/vector-icons';
-
-import map from '../assets/images/map.jpeg';
 import dotCircle from '../assets/icons/dot-circle.png';
 import calendar from '../assets/icons/calendar.png';
 import clock from '../assets/icons/clock.png';
@@ -38,8 +23,10 @@ import MapView, { Marker } from 'react-native-maps';
 
 import pic from '../assets/images/profile-pic-1.png';
 import * as ClassesController from '../controllers/classes.controller';
+import * as ConsultationsController from '../controllers/consultations.controller';
 import ModalChoiceClassDate from '../components/modals/ModalChoiceClassDate';
 import ModalChoiceClassHour from '../components/modals/ModalChoiceClassHour';
+import { TextInput } from 'react-native-gesture-handler';
 
 const Home = (props) => {
 
@@ -50,12 +37,10 @@ const Home = (props) => {
   const [modalHourVisible, setModalHourVisible] = React.useState(false);
   const [map, setMap] = React.useState({});
   const [filtered, setFiltered] = React.useState([]);
-  const [results, setResults] = React.useState([
-    { id: 1, title: "test 1", coords: { latitude: 37.7897442, longitude: -122.3972337 } },
-    { id: 2, title: "Transamerica pyramid 2", coords: { latitude: 37.7951775, longitude: -122.4027787 } },
-    { id: 3, title: "Sutro Tower", coords: { latitude: 37.7428201, longitude: -122.4701585 } },
-  ]);
+  const [results, setResults] = React.useState([]);
   const [searchText, setSearchText] = React.useState('');
+  const [selectedResult, setSelectedResult] = React.useState(false);
+  const [isEditingAddress, setIsEditingAddress] = React.useState(false);
 
   const getCurrentPosition = async () => {
 
@@ -66,57 +51,82 @@ const Home = (props) => {
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    // console.log(location)
     setLocation(location);
 
   }
 
   const getScheduledClasses = async (user_id) => {
-    console.log({ user_id })
+    // console.log({ user_id })
     let c = await ClassesController.getAllScheduledByUserId(user_id);
-    // console.log({ new_classes: c.data.lessons })
-    // let scheduled = (c.data.lessons).filter(item => item.status == "scheduled");
     let scheduled = c.data.scheduled_lessons;
-    console.log({ scheduled })
+    // console.log({ scheduled })
     await props.setScheduledClasses(scheduled);
+  }
+
+
+
+
+  const getScheduledConsultations = async (user_id) => {
+    // console.log({ user_id })
+    let c = await ConsultationsController.getAllScheduledByUserId(user_id);
+    let scheduled = c.data.scheduled_consultations;
+    // console.log({ scheduled })
+    await props.setScheduledConsultations(scheduled);
   }
 
 
 
   const handleSchedule = async () => {
 
-    if (!props.newClass?.date || !props.newClass?.hour) {
+    // console.log(props.newClass);
+    console.log('---1---')
+
+    if (!props.newClass?.date || !props.newClass?.hour || !props.newClass?.starting_point) {
       Alert.alert("Oooops!", "Preencha todas as informações antes de agendar a aula.");
       return false;
     } else if (props.user?.classes_credits <= 0) {
-      Alert.alert("Oooops!", "Você não tem créditos para agendar a aula.", [
-        { text: "COMPRAR CRÉDITOS", onPress: () => { props.navigation.navigate('BuyClassesCredits') } }
-      ]);
+      props.navigation.navigate('BuyClassesCredits')
       return false;
     }
     let classToSchedule = props.newClass;
+    console.log('---2---')
     classToSchedule = {
       ...classToSchedule,
       id_default_time: classToSchedule.hour.id,
       id_user_client: props.user.id
     };
+    console.log('---3---')
 
     try {
 
+      console.log('---4---')
       let response = await ClassesController.schedule(classToSchedule);
+      console.log('---5---')
       if (!response.error) {
-        // console.log({ lessons: response.data.lessons });
-        console.log({ classes_credits: response.data.classes_credits });
-        let scheduled = (response.data.scheduled_lessons);
-        console.log({ scheduled })
-        await props.setScheduledClasses(scheduled);
+        let scheduled_lessons = (response.data.scheduled_lessons);
+        let last_lesson_scheduled = (response.data.last_lesson_scheduled);
+        console.log({ last_lesson_scheduled })
+        console.log('---6---')
+        console.log(props.currentClass?.id)
+        await props.setCurrentClass(last_lesson_scheduled);
+        console.log('---7---')
+        console.log(props.currentClass?.id)
+        await props.setScheduledClasses(scheduled_lessons);
+        console.log('---8---')
+        console.log(props.scheduledClass?.id)
+        await props.setScheduledClass(last_lesson_scheduled);
+        console.log(props.scheduledClass?.id)
+        console.log('---9---')
         await props.setClassesCredits(response.data.classes_credits);
-        Alert.alert("Parabéns!", "Sua aula foi agendada com sucesso!");
+        console.log('---10---')
+        props.navigation.navigate("Confirmation");
+        console.log('---11---')
       }
       else {
-      Alert.alert("Erro", "Error: [" + response.error_code + "] - " +  response.error);
+        Alert.alert("Erro", "Error: [" + response.error_code + "] - " + response.error);
 
       }
+      console.log('---12---')
 
     } catch (error) {
       console.log({ error });
@@ -144,8 +154,15 @@ const Home = (props) => {
 
   const handleSetClickedLocation = (loc) => {
     setClickedLocation(loc)
-    // setClickedLocation({ ...clickedLocation, coords: { latitude: loc.coords.latitude, longitude: loc.coords.longitude } });
-    // setLocation({ ...location, coords: { latitude: loc.coords.latitude, longitude: loc.coords.longitude } });
+    setSearchText(loc.title);
+    setFiltered([]);
+    realignMap();
+    return true;
+  }
+
+  const handleSetSelectedResult = (loc) => {
+    loc.title = loc.address_components[0].long_name;
+    setSelectedResult(loc)
     setSearchText(loc.title);
     setFiltered([]);
     realignMap();
@@ -154,23 +171,23 @@ const Home = (props) => {
 
   React.useEffect(() => {
     getScheduledClasses(props.user.id);
+    getScheduledConsultations(props.user.id);
     getCurrentPosition();
-    // console.log(props.user)
-  }, []);
+  }, [props.user]);
 
+  React.useEffect(() => {
+    //ao alterar o resultado selecionado
+    // if(selectedResult) handleSetClickedLocation(selectedResult)
+    if (selectedResult) handleSetSelectedResult(selectedResult)
+  }, [selectedResult]);
+
+  React.useEffect(() => {
+    console.log({ currentClass: props.currentClass })
+  }, [props.currentClass]);
 
   return (
-    // <Styled.Container style={{ paddingTop: 0, backgroundColor: '#fff' }}>
-    // <Styled.ContainerKeyboard behavior="position" enabled style={{ paddingTop: 0, backgroundColor: '#fff' }}>
-    <Styled.ContainerKeyboard behavior="position" enabled
-      contentContainerStyle={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "flex-end",
-        backgroundColor: "#fff",
-        width: "100%"
-      }}>
-      <Header screenTitle="Home" client navigation={props.navigation} />
+    <Styled.Container style={{ paddingTop: 0, backgroundColor: '#fff' }}>
+      <Header screenTitle="Home" home client navigation={props.navigation} />
 
 
       <ModalChoiceClassDate visible={modalDateVisible} setVisible={setModalDateVisible} />
@@ -179,14 +196,12 @@ const Home = (props) => {
       {
         props.scheduledClasses?.length > 0
         &&
-        <View style={{ height: 110, width: "90%" }}>
-          <Styled.SectionTitleTwo>Próximas aulas</Styled.SectionTitleTwo>
+        <View style={{ height: 110, width: "100%", alignItems: "center", justifyContent: "center"}}>
+          <Styled.SectionTitleTwo style={{ width: "90%" }}>Próximas aulas</Styled.SectionTitleTwo>
 
           <Styled.ClassesScrollHorizontal>
             {props.scheduledClasses && props.scheduledClasses.map((c, index, arr) => {
               let opacity = (((arr.length - (index + 1)) / arr.length) + (1 / arr.length));
-              // console.log({c})
-              // console.log(arr.length, "index: ", index)
               if (c.status == "scheduled")
                 return (
                   <Styled.ClassBox key={c.id}>
@@ -194,13 +209,12 @@ const Home = (props) => {
                       setClickedClass(c)
                       await props.setScheduledClass(c)
                       props.navigation.navigate("Confirmation");
-                      // setModalIsVisible(true)
                     }
                     }
                       activeOpacity={0.7}
                       style={{ backgroundColor: 'rgba(196, 58, 87, ' + opacity + ')' }} key={c.id}>
                       <Styled.ClassBoxCircleDay>{(c.date)?.split("/")[0] || ""}</Styled.ClassBoxCircleDay>
-                      <Styled.ClassBoxCircleMonth>{(functions.getMonthName(parseInt((c.date).split("/")[1])))}</Styled.ClassBoxCircleMonth>
+                      <Styled.ClassBoxCircleMonth>{(functions.getMonthName(parseInt((c.date).split("/")[1]), 1))}</Styled.ClassBoxCircleMonth>
                     </Styled.ClassBoxCircleContainer>
                   </Styled.ClassBox>
                 );
@@ -214,25 +228,25 @@ const Home = (props) => {
           (props.user?.is_psychologist || props.user?.is_driver) && <Styled.TextAlert>Essa tela é visível apenas para o cliente</Styled.TextAlert>
         }
 
-        <View style={{ flex: 1, paddingBottom: 20, width: '100%', /*height: Dimensions.get('window').height - 200, */ alignItems: 'center', justifyContent: 'flex-end', }}>
+        <View style={{ flex: 1, paddingBottom: 20, width: '100%', alignItems: 'center', justifyContent: 'flex-end', }}>
 
 
           {location && <View style={StyleSheet.absoluteFillObject}>
 
             <MapView
               initialRegion={{
-                latitude: location.coords.latitude || 37.4219312,
-                longitude: location.coords.longitude || -122.0840363,
+                // latitude: location.coords.latitude || 37.4219312,
+                // longitude: location.coords.longitude || -122.0840363,
+                latitude: selectedResult?.geometry?.location.lat || 37.4219312,
+                longitude: selectedResult?.geometry?.location.lng || -122.0840363,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
-                // latitudeDelta: 0.0004,
-                // longitudeDelta: 0.0004,
               }}
-
+              loadingEnabled
               style={StyleSheet.absoluteFillObject}
               ref={object => setMap(object)}
             >
-              {location && <Marker
+              {/* {location && <Marker
                 coordinate={{ latitude: location?.coords.latitude, longitude: location?.coords.longitude }}
                 title={'Aluna X'}
                 description={'Aluna X - 2 aulas'}
@@ -247,37 +261,77 @@ const Home = (props) => {
                 icon={pic}
                 style={{}}
                 identifier="destination"
+              />} */}
+              {selectedResult && <Marker
+                coordinate={{ latitude: selectedResult?.geometry?.location.lat, longitude: selectedResult?.geometry?.location.lng }}
+                title={selectedResult?.title}
+                description={'Destino clicado no mapa.'}
+                icon={pic}
+                style={{}}
+                identifier="destination"
               />}
               <View style={{ position: 'absolute', top: 100, left: 50 }} />
             </MapView>
 
           </View>}
 
-          <View style={{ flexDirection: 'column', width: '90%', marginVertical: 5, marginHorizontal: 0, borderRadius: 10, backgroundColor: "#fff", padding: 10, }}>
-            <View style={{ flexDirection: 'row', flexWrap: 'nowrap', marginBottom: -15 }}>
+          {/* <View style={{ height: 110, flexDirection: 'column', width: '90%', marginVertical: 0, marginHorizontal: 0, borderRadius: 10, backgroundColor: "red", padding: 10, }}> */}
+          {/* <View style={{ height: 150, flexDirection: 'column', width: '90%', marginVertical: 0, marginHorizontal: 0, borderRadius: 10, backgroundColor: "rgba(0,0,0,0.1)", padding: 10, height: 200 }}> */}
+          <View style={{ backgroundColor: "#FFF", maxHeight: isEditingAddress ? 200 : 80, flexDirection: 'column', width: '90%', marginVertical: 5, marginHorizontal: 0, borderRadius: 10, padding: 10, height: 200 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'nowrap', marginBottom: 0 }}>
               <Styled.Illustration source={dotCircle} style={{ width: 20, height: 20, marginRight: 3 }} />
               <Styled.SectionTitle style={{ textAlign: 'left', fontWeight: 'bold', fontSize: 16, width: '100%', margin: 0 }}>Onde nos encontramos?</Styled.SectionTitle>
             </View>
-            <Styled.TxtInput style={{ width: '90%', margin: 0, fontSize: 14 }} value={searchText} onChangeText={(e) => setSearchText(handleOnSearch(e))} placeholder="Digite o local aqui..." />
+            {/* <Styled.TxtInput style={{ width: '90%', margin: 0, fontSize: 14 }} value={searchText} onChangeText={(e) => setSearchText(handleOnSearch(e))} placeholder="Digite o local aqui..." /> */}
+
+            <GooglePlacesAutocomplete
+              placeholder='Digite o local aqui...'
+              fetchDetails={true}
+              onPress={(data, details = null) => {
+                setSelectedResult(details);
+                props.setNewClass({ ...props.newClass, starting_point: details.formatted_address });
+              }}
+              onNotFound={() => console.log("Place not found")}
+              onTimeout={() => console.log("Timeout... not found")}
+              onFail={(error) => console.log({ error })}
+
+
+              query={{
+                key: 'AIzaSyD3WSrKrOMcx5wDr-9aGWqBMyQAlBdnVaI',
+                language: 'pt-br',
+                components: "country:br",
+              }}
+
+              textInputProps={{
+                InputComp: TextInput,
+                leftIcon: { type: 'font-awesome', name: 'chevron-left' },
+                errorStyle: { color: 'red' },
+                placeholderTextColor: "#E46788",
+                onFocus: () => setIsEditingAddress(true),
+                onEndEditing: () => setIsEditingAddress(false)
+              }}
+
+              requestUrl={{
+                url:
+                  'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api',
+                useOnPlatform: 'web',
+              }}
+
+              styles={{
+                container: { marginVertical: 0, width: "100%" },
+                textInput: {
+                  borderBottomWidth: 1,
+                  borderColor: "#C43A57",
+                  fontSize: 14,
+                  color: "#555",
+                },
+              }}
+            />
           </View>
 
-          <View style={{ flex: 2 }} />
+          {/* </View> */}
 
-          {/* <GooglePlacesAutocomplete
-            styles={{ container: { backgroundColor: "green", height: 50, width: "90%", marginVertical: 5 } }}
-            placeholder='Search'
-            value={searchText}
-            onFail={(e) => console.log("error", e)}
-            onChangeText={(e) => console.log(e)}
-            onPress={(data, details = null) => {
-              // 'details' is provided when fetchDetails = true
-              console.log(data, details);
-            }}
-            query={{
-              key: 'AIzaSyBvEDZQOn34br9BLqNTUe9HbJNACpFody8',
-              language: 'en',
-            }}
-          /> */}
+          <View style={{ flex: 2 }} />
 
           <View style={{ width: "90%", backgroundColor: "#FFF" }}>
             {filtered && filtered.map(result => {
@@ -315,55 +369,9 @@ const Home = (props) => {
       </Styled.MapContainer>
 
       <Footer screenTitle="Home" client navigation={props.navigation} />
-    </Styled.ContainerKeyboard>
+    </Styled.Container>
   );
 };
-
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'flex-start',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  openButton: {
-    backgroundColor: '#F194FF',
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-    marginTop: 10
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 5,
-    textAlign: 'left',
-  },
-  modalTitle: {
-    marginBottom: 15,
-    textAlign: 'center',
-    fontWeight: 'bold'
-  },
-});
-
 
 const mapStateToProps = (state) => {
   return {
@@ -376,6 +384,8 @@ const mapStateToProps = (state) => {
     //classes
     classes: state.classReducer.classes,
     newClass: state.classReducer.newClass,
+    currentClass: state.classReducer.currentClass,
+    scheduledClass: state.classReducer.scheduledClass,
     scheduledClasses: state.classReducer.scheduledClasses,
 
     //consultations
@@ -390,11 +400,13 @@ const mapDispatchToProps = (dispatch) => {
     //class
     setCurrentClass: (currentClass) => dispatch({ type: 'SET_CURRENT_CLASS', payload: { currentClass } }),
     setClasses: (classes) => dispatch({ type: 'SET_CLASSES', payload: { classes } }),
+    setNewClass: (newClass) => dispatch({ type: 'SET_NEW_CLASS', payload: { newClass } }),
     setScheduledClass: (scheduledClass) => dispatch({ type: 'SET_SCHEDULED_CLASS', payload: { scheduledClass } }),
     setScheduledClasses: (scheduledClasses) => dispatch({ type: 'SET_SCHEDULED_CLASSES', payload: { scheduledClasses } }),
     setClassesCredits: (classes_credits) => dispatch({ type: 'SET_CLASSES_CREDITS', payload: { classes_credits } }),
     //consultation
     setCurrentConsultation: (currentConsultation) => dispatch({ type: 'SET_CURRENT_CONSULTATION', payload: { currentConsultation } }),
+    setScheduledConsultations: (scheduledConsultations) => dispatch({ type: 'SET_SCHEDULED_CONSULTATIONS', payload: { scheduledConsultations } }),
   }
 };
 

@@ -14,28 +14,56 @@ import { connect } from 'react-redux';
 
 import logo from '../assets/images/logo-1.png';
 import profilePic from '../assets/images/profile-pic-3.png';
+import profileIcon from '../assets/icons/profile-user.png';
 
 import * as Styled from '../assets/styles/styled';
-import ModalInfo from '../components/modals/ModalInfo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
+import * as UsersController from "../controllers/users.controller";
+
 const ProfileEdit = (props) => {
 
-  const [modal, setModal] = React.useState({ title: "Em desenvolvimento", desc: "Esta função que você tentou acessar ainda está em desenvolvimento" });
+  const confirmDeleteAccount = async () => new Promise((resolve) => {
+    Alert.alert("Excluir conta", "Tem certeza que deseja excluir a sua conta?", [
+      { text: "NÃO", onPress: () => resolve(false) },
+      { text: "SIM", onPress: () => resolve(true) },
+    ]);
+  });
 
-  React.useEffect(() => {
-    console.log(props.user)
-  }, []);
+  const handleLogout = async () => {
+    await props.logout();
+    props.navigation.navigate("Walkthrough");
+  }
+
+  const handleDelete = async (user) => {
+    console.log(user);
+
+    try {
+      let response = await UsersController.deleteAccount(user);
+      if (!response.error) {
+        Alert.alert("Conta excluída", "Sua conta foi excluída com sucesso. Até mais :)");
+        return false;
+      }
+      else {
+        Alert.alert("Erro", "[" + error.error_code + "] - " + error.error);
+        return false;
+      }
+    } catch (error) {
+      console.log({ error });
+      return false;
+    }
+
+  };
 
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
-      <ModalInfo title={modal.title} description={modal.desc} />
       <Header screenTitle="Home" client psychologist navigation={props.navigation} />
       <Styled.ScrollContainer>
         {/* {props?.user?.profile_photo && <Styled.ProfileImage2 source={props?.user?.profile_photo && profilePic} />} */}
-        {props?.user?.profile_photo && <Styled.ProfileImage2 source={{ uri: props?.user?.profile_photo }} />}
+        {/* {props?.user?.profile_photo && <Styled.ProfileImage2 source={{ uri: props?.user?.profile_photo }} />} */}
         {/* {!props?.user?.profile_photo && <Styled.ProfileImage2 source={profilePic} />} */}
+        {!props.user.profile_photo && <Styled.ProfileIcon source={profileIcon} />}
         <Styled.BtnSub>
           <Styled.TxtBtnSub>Trocar foto de perfil</Styled.TxtBtnSub>
         </Styled.BtnSub>
@@ -86,7 +114,7 @@ const ProfileEdit = (props) => {
             </View>
           </View>
 
-          <Styled.BtnSub>
+          <Styled.BtnSub onPress={async () => await confirmDeleteAccount() ? (handleDelete(props.user) ? handleLogout() : "") : ""}>
             <Styled.TxtBtnSub>Excluir conta</Styled.TxtBtnSub>
           </Styled.BtnSub>
 
@@ -101,8 +129,6 @@ const ProfileEdit = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    //modal
-    modalInfoVisible: state.modalReducer.modalInfoVisible,
     //user
     user: state.userReducer,
   }
@@ -110,8 +136,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    //modal
-    setModalInfoVisible: (modalInfoVisible) => dispatch({ type: 'SET_MODAL_INFO_VISIBLE', payload: { modalInfoVisible } }),
 
     //user logout
     logout: () => dispatch({ type: 'LOGOUT', payload: {} }),

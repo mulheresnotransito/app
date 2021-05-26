@@ -28,11 +28,13 @@ import * as UsersController from "../controllers/users.controller";
 const ChoiceCard = (props) => {
 
   const [saveCard, setSaveCard] = React.useState(false);
+  const [termsAndConditions, setTermsAndConditions] = React.useState(false);
+  const toggleSaveCardSwitch = () => setSaveCard(previousState => !previousState);
+  const toggleTermsAndConditionsSwitch = () => setTermsAndConditions(previousState => !previousState);
   const [paymentInfo, setPaymentInfo] = React.useState({
     creditCard: { number: "", expiration_date: "", security_code: "", client_name: "" },
-    newCredits: props.newCredits
+    newCredits: props.newCredits ? props.newCredits : 0
   });
-  const toggleSwitch = () => setSaveCard(previousState => !previousState);
   const handleBuy = async (buyInfo) => {
     console.log(buyInfo)
     try {
@@ -52,7 +54,7 @@ const ChoiceCard = (props) => {
   }
 
   React.useEffect(() => {
-    if (!props.newCredits) props.navigation.navigate("Home");
+    if (!props.newCredits) props.navigation.goBack();
   }, []);
 
   return (
@@ -108,20 +110,32 @@ const ChoiceCard = (props) => {
 
           </View>
 
-          <View style={{ width: '90%', flexDirection: 'row', flexWrap: 'nowrap', flex: 1, alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ width: '90%', flexDirection: 'row', flexWrap: 'nowrap', flex: 1, alignItems: 'center', justifyContent: 'space-between', marginVertical: 5 }}>
             <Styled.TxtQuestion style={{ fontWeight: '500', fontSize: 14, color: "#D987A3", margin: 0, padding: 0, flex: 1, textAlign: "left" }}>Guardar dados do cartão?</Styled.TxtQuestion>
             <Switch
               trackColor={{ false: "#555", true: "#a22341" }}
               thumbColor={saveCard ? "#fff" : "#aaa"}
               ios_backgroundColor="#777"
 
-              onValueChange={toggleSwitch}
+              onValueChange={toggleSaveCardSwitch}
               value={saveCard}
+            />
+          </View>
+
+          <View style={{ width: '90%', flexDirection: 'row', flexWrap: 'nowrap', flex: 1, alignItems: 'center', justifyContent: 'space-between', marginVertical: 5 }}>
+            <Styled.TxtQuestion style={{ fontWeight: '500', fontSize: 14, color: "#D987A3", margin: 0, padding: 0, flex: 1, textAlign: "left" }}>Concorda com os Termos e Condições?</Styled.TxtQuestion>
+            <Switch
+              trackColor={{ false: "#555", true: "#a22341" }}
+              thumbColor={termsAndConditions ? "#fff" : "#aaa"}
+              ios_backgroundColor="#777"
+
+              onValueChange={toggleTermsAndConditionsSwitch}
+              value={termsAndConditions}
             />
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'nowrap', width: '90%', justifyContent: 'center', alignItems: 'center', marginVertical: 20 }}>
             <Styled.TxtQuestion style={{ fontWeight: '400', fontSize: 16, color: "#C43A57", margin: 0, padding: 0, flex: 1, textAlign: 'right' }}>Valor total: R$</Styled.TxtQuestion>
-            <Styled.TxtQuestion style={{ fontWeight: '800', fontSize: 26, color: "#C43A57", margin: 0, padding: 0, flex: 1, textAlign: 'left' }}>{(props.newCredits?.price).substr(2)}</Styled.TxtQuestion>
+            <Styled.TxtQuestion style={{ fontWeight: '800', fontSize: 26, color: "#C43A57", margin: 0, padding: 0, flex: 1, textAlign: 'left' }}>{props.newCredits ? (props.newCredits?.price).substr(2) : 0}</Styled.TxtQuestion>
           </View>
 
         </View>

@@ -1,7 +1,10 @@
 const initialState = {
   consultations: [],
   currentConsultation: {},
-  newConsultation: {}
+  scheduledConsultation: {},
+  scheduledConsultations: [],
+  newConsultation: {},
+  psychologists: []
 };
 
 export default (state = initialState, action) => {
@@ -13,8 +16,17 @@ export default (state = initialState, action) => {
     case 'SET_CURRENT_CONSULTATION':
       return { ...state, currentConsultation: action.payload.currentConsultation };
       break;
+    case 'SET_SCHEDULED_CONSULTATION':
+      return { ...state, scheduledConsultation: action.payload.scheduledConsultation };
+      break;
+    case 'SET_SCHEDULED_CONSULTATIONS':
+      return { ...state, scheduledConsultations: action.payload.scheduledConsultations };
+      break;
     case 'SET_NEW_CONSULTATION':
       return { ...state, newConsultation: action.payload.newConsultation };
+      break;
+    case 'SET_PSYCHOLOGISTS':
+      return { ...state, psychologists: action.payload.psychologists };
       break;
     case 'RESET_CONSULTATIONS':
       return { ...state, consultations: [] };

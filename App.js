@@ -36,42 +36,13 @@ import BePsychologist from './src/views/BePsychologist';
 import SingleNotice from './src/views/SingleNotice';
 import VideoCall from './src/views/VideoCall';
 import BuyClassesCredits from './src/views/BuyClassesCredits';
+import BuyConsultationsCredits from './src/views/BuyConsultationsCredits';
+import ChoiceCardConsultations from './src/views/ChoiceCardConsultations';
+import ConfirmationConsultation from './src/views/ConfirmationConsultation';
+import CancelConsultation from './src/views/CancelConsultation';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
-
-const StackNav = () => {
-  return (
-    <Drawer.Navigator initialRouteName="Walkthrough" drawerStyle={{ backgroundColor: "#E46788" }} drawerContentOptions={{ activeBackgroundColor: "#dfdfdf", activeTintColor: "#E46788", inactiveTintColor: "#efefef" }} >
-      <Drawer.Screen name="Walkthrough" component={Walkthrough} options={{ headerShown: null, title: "1 - Tela Inicial", }} />
-      <Drawer.Screen name="Login" component={Login} options={{ headerShown: null, title: "2 - Login", }} />
-      <Drawer.Screen name="Register" component={Register} options={{ /*headerShown: null,*/ title: "3 - Cadastro", }} />
-      <Drawer.Screen name="Home" component={Home} options={{ headerShown: null, title: "4 - Home", }} />
-      <Drawer.Screen name="ChoiceClasses" component={ChoiceClasses} options={{ headerShown: null, title: "5 - Escolher aulas", }} />
-      <Drawer.Screen name="ChoiceCard" component={ChoiceCard} options={{ headerShown: null, title: "6 - Escolher cartão", }} />
-      <Drawer.Screen name="Confirmation" component={Confirmation} options={{ headerShown: null, title: "7 - Confirmação", }} />
-      <Drawer.Screen name="News" component={News} options={{ headerShown: null, title: "8 - Notícias", }} />
-      <Drawer.Screen name="CardCancel" component={CardCancel} options={{ headerShown: null, title: "9 - Cancelar", }} />
-      <Drawer.Screen name="Cancel" component={Cancel} options={{ headerShown: null, title: "10 - Confirmar cancelamento", }} />
-      <Drawer.Screen name="DriverWallet" component={DriverWallet} options={{ headerShown: null, title: "11 - Carteira do Motorista", }} />
-      <Drawer.Screen name="ProfileEdit" component={ProfileEdit} options={{ headerShown: null, title: "12 - Editar Perfil", }} />
-      <Drawer.Screen name="About" component={About} options={{ headerShown: null, title: "13 - Sobre nós", }} />
-      <Drawer.Screen name="DriverProfileEdit" component={DriverProfileEdit} options={{ headerShown: null, title: "14 - Editar Perfil (motorista)", }} />
-      <Drawer.Screen name="Wallet" component={Wallet} options={{ headerShown: null, title: "15 - Carteira", }} />
-      <Drawer.Screen name="PsychologistProfileEdit" component={PsychologistProfileEdit} options={{ headerShown: null, title: "16 - Editar Perfil (psicóloga)", }} />
-      <Drawer.Screen name="ExternalProfile" component={ExternalProfile} options={{ headerShown: null, title: "17 - Perfil (externo)", }} />
-      <Drawer.Screen name="PsychologistWallet" component={PsychologistWallet} options={{ headerShown: null, title: "18 - Carteira da Psicóloga", }} />
-      <Drawer.Screen name="ChoiceSessions" component={ChoiceSessions} options={{ headerShown: null, title: "19 - Escolher data (psicóloga)", }} />
-      <Drawer.Screen name="ChoiceSessionsTwo" component={ChoiceSessionsTwo} options={{ headerShown: null, title: "19 - Escolher data (psicóloga)", }} />
-      <Drawer.Screen name="ChoicePsychologistHour" component={ChoicePsychologistHour} options={{ headerShown: null, title: "20 - Escolher horário (psicóloga)", }} />
-      <Drawer.Screen name="SessionConfirmation" component={SessionConfirmation} options={{ headerShown: null, title: "21 - Confirmação da Sessão (psicóloga)", }} />
-      <Drawer.Screen name="BeDriver" component={BeDriver} options={{ headerShown: null, title: "22 - Seja motorista", }} />
-      <Drawer.Screen name="BePsychologist" component={BePsychologist} options={{ headerShown: null, title: "23 - Seja psicóloga", }} />
-      <Drawer.Screen name="SingleNotice" component={SingleNotice} options={{ headerShown: null, title: "24- Notícia", }} />
-      <Drawer.Screen name="VideoCall" component={VideoCall} options={{ headerShown: null, title: "25- Chamada de vídeo", }} />
-    </Drawer.Navigator>
-  );
-}
 
 const AuthStack = () => {
   return (
@@ -87,17 +58,6 @@ function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        {/* <Stack.Navigator initialRouteName="Stack"> */}
-        {/* <Stack.Screen name="Stack" component={StackNav} options={{ headerShown: null }} /> */}
-        {/* <Stack.Screen name="Walkthrough" component={Walkthrough} options={{ headerShown: null }} /> */}
-        {/* </Stack.Navigator> */}
-        {/* <Drawer.Navigator initialRouteName="Walkthrough" drawerStyle={{ backgroundColor: "#E46788" }} drawerContentOptions={{ activeBackgroundColor: "#dfdfdf", activeTintColor: "#E46788", inactiveTintColor: "#efefef" }} >
-          <Drawer.Screen name="Walkthrough" component={Walkthrough} options={{ headerShown: null, title: "1 - Tela Inicial", }} />
-          <Drawer.Screen name="Login" component={Login} options={{ headerShown: null, title: "2 - Login", }} />
-        </Drawer.Navigator> */}
-
-
-
 
         <Drawer.Navigator initialRouteName="Walkthrough" drawerStyle={{ backgroundColor: "#E46788" }} drawerContentOptions={{ activeBackgroundColor: "#dfdfdf", activeTintColor: "#E46788", inactiveTintColor: "#efefef" }} >
           <Drawer.Screen name="Walkthrough" component={AuthStack} options={{ title: "1 - Tela Inicial", }} />
@@ -127,12 +87,11 @@ function App() {
           <Drawer.Screen name="SingleNotice" component={SingleNotice} options={{ headerShown: null, title: "24- Notícia", }} />
           <Drawer.Screen name="VideoCall" component={VideoCall} options={{ headerShown: null, title: "25- Chamada de vídeo", }} />
           <Drawer.Screen name="BuyClassesCredits" component={BuyClassesCredits} options={{ headerShown: null, title: "26- Comprar créditos", }} />
+          <Drawer.Screen name="BuyConsultationsCredits" component={BuyConsultationsCredits} options={{ headerShown: null, title: "27- Comprar créditos de consultas", }} />
+          <Drawer.Screen name="ChoiceCardConsultations" component={ChoiceCardConsultations} options={{ headerShown: null, title: "28- Escolher cartão de comprar consultas", }} />
+          <Drawer.Screen name="ConfirmationConsultation" component={ConfirmationConsultation} options={{ headerShown: null, title: "29- Confirmação de consulta", }} />
+          <Drawer.Screen name="CancelConsultation" component={CancelConsultation} options={{ headerShown: null, title: "30- Cancelar consulta", }} />
         </Drawer.Navigator>
-
-
-
-
-
 
       </NavigationContainer>
     </Provider>

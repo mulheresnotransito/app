@@ -28,6 +28,13 @@ import * as ClassesController from "../controllers/classes.controller";
 
 const Cancel = (props) => {
 
+  const confirmCancellation = async () => new Promise((resolve) => {
+    Alert.alert("Cancelamento", "Deseja cancelar a aula?", [
+      { text: "NÃO", onPress: () => resolve(false) },
+      { text: "SIM", onPress: () => resolve(true) },
+    ]);
+  })
+
 
   const handleCancel = async (classToCancel) => {
     if (!classToCancel.id || !classToCancel.id_user_client || !classToCancel.text) {
@@ -83,7 +90,7 @@ const Cancel = (props) => {
           <Styled.Illustration source={camera} style={{ width: 25, height: 21.88, marginHorizontal: 3, }} />
         </TouchableOpacity>
 
-        <Styled.BtnCTA2 onPress={() => handleCancel(props.scheduledClass)} style={{ marginTop: 50 }}>
+        <Styled.BtnCTA2 onPress={async () => await confirmCancellation() ? handleCancel(props.scheduledClass) : ""} style={{ marginTop: 50 }}>
           <Styled.TxtBtnCTA2>CANCELAR AULA</Styled.TxtBtnCTA2>
         </Styled.BtnCTA2>
 

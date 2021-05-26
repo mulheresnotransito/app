@@ -7,8 +7,7 @@ export const BtnCTA = styled.TouchableOpacity`
   border-radius: 40px;
   border-color: ${props => props.borderColor || "#C43A57"};
   background-color: ${props => props.bgColor || "#C43A57"};
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 5px 0px;
   width: ${props => props.width || "70%"};
   padding: 15px;
 `;
@@ -405,27 +404,42 @@ export const AdAdvertiser = styled.Text`
   font-weight: 500;
   color: #01626B;
 `;
+
 export const AdImg = styled.Image`
   border-radius: 10px;
   width: 120px;
   height: 100px;
 `;
+
 export const Logo = styled.Image`
   width: ${props => 608 * 0.3 + "px"};
   height: ${props => 165 * 0.3 + "px"};
 `;
+
 export const ProfileImage = styled.Image`
   width: ${props => 200 * 0.3 + "px"};
   height: ${props => 200 * 0.3 + "px"};
 `;
+
 export const ProfileImage2 = styled.Image`
   width: 100px;
   height: 100px;
   border-radius: 50px;
 `;
+
+export const ProfileIcon = styled.Image`
+  width: 80px;
+  height: 80px;
+  border-radius: 50px;
+  tint-color: #ccc;
+`;
 export const Illustration = styled.Image`
   width: ${props => 1125 * 0.3 + "px"};
   height: ${props => 1082 * 0.3 + "px"};
+`;
+export const WalkthroughImage = styled.Image`
+  width: ${props => 1125 * 0.3 + "px"};
+  height: ${props => 1082 * 0.4 + "px"};
 `;
 
 export const ActiveFooterIcon = styled.Image`
@@ -471,7 +485,7 @@ export const ModalView = styled.View.attrs(props => ({
   /* margin: 20; */
   background-color: #fff;
   border-radius: 20px;
-  padding: 35px;
+  padding: 15px 0px;
   align-items: center;
   width: 100%;
   position: absolute; 
@@ -510,7 +524,9 @@ export const TxtBtnModal = styled.Text`
 //inputs
 
 export const TxtInput = styled.TextInput.attrs(props => ({
-  placeholderTextColor: "#E46788"
+  placeholderTextColor: "#E46788",
+  autoCorrect: false,
+  autoCapitalize: "none"
 }))`
   width: 90%;
   height: 50px;
@@ -522,7 +538,9 @@ export const TxtInput = styled.TextInput.attrs(props => ({
 `;
 
 export const CheckoutInput = styled.TextInput.attrs(props => ({
-  placeholderTextColor: "#E46788"
+  placeholderTextColor: "#E46788",
+  autoCorrect: false,
+  autoCapitalize: "none"
 }))`
   width: 90%;
   height: 40px;
@@ -534,7 +552,9 @@ export const CheckoutInput = styled.TextInput.attrs(props => ({
 `;
 
 export const CheckoutInputTwo = styled.TextInput.attrs(props => ({
-  placeholderTextColor: "#E46788"
+  placeholderTextColor: "#E46788",
+  autoCorrect: false,
+  autoCapitalize: "none"
 }))`
   flex:1;
   height: 40px;
@@ -546,7 +566,9 @@ export const CheckoutInputTwo = styled.TextInput.attrs(props => ({
 `;
 
 export const TxtInput1 = styled.TextInput.attrs(props => ({
-  placeholderTextColor: "#E46788"
+  placeholderTextColor: "#E46788",
+  autoCorrect: false,
+  autoCapitalize: "none"
 }))`
   /* width: 80%; */
   flex:1;
@@ -789,6 +811,7 @@ export const BoxTitle = styled.View`
   width: 90%;
   align-items: center;
   justify-content: center;
+  margin: 10px 0px;
 `;
 
 export const TxtSecondaryTitle = styled.Text`
@@ -804,11 +827,17 @@ export const TxtNewsTitle = styled.Text`
   background-color: #C43A57;
   color: #efefef;
   text-align: center;
+`;
+
+export const NoticesHeaderBar = styled.View`
   width: 100%;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding-top: 7px;
-  padding-bottom: 7px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  background-color: #C43A57;
+  padding: 8px 0px;
+  margin: 0px 0px 10px 0px;
 `;
 
 
@@ -834,22 +863,11 @@ export const HeaderComp = styled.TouchableOpacity`
   flex-wrap: nowrap;
 `;
 
-export const SearchBar = styled.TextInput`
-  margin: 5px 0px;
-  padding: 12px;
-  border-width: 1px;
-  border-color: #ccc;
-  border-radius: 50px;
-  width: 90%;
-  color: #555;
-  font-weight: bold;
-`;
-
 export const List = styled.View`
   padding: 5px;
-  width: 90%;
+  width: 100%;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-direction: row;
   flex-wrap: wrap;
 `;
@@ -857,7 +875,7 @@ export const List = styled.View`
 export const ListItem = styled.TouchableOpacity`
   background-color: #fff;
   border-radius: 10px;
-  width: 45%;
+  width: 46%;
   height: 140px;
   align-items: center;
   justify-content: center;
@@ -875,8 +893,165 @@ export const ListPhoto = styled.Image`
 `;
 
 export const ListTitle = styled.Text`
-  color: rgb(185, 65, 98);
+  color: #bb3f62;
   font-weight: 500;
   padding: 8px 5px;
   font-size: 12px;
+`;
+
+export const PsychologistItem = styled.TouchableOpacity`
+  background-color: #fff;
+  border-radius: 25px;
+  width: 90%;
+  height: 80px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  margin: 5px 0px;
+  border-width: 1px;
+  border-color: #ddd;
+`;
+
+export const PsychologistPhoto = styled.Image`
+  flex: 1;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  width: 100%;
+  resize-mode: center;
+`;
+export const PsychologistSection = styled.View`
+  flex: 1;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const PsychologistTitle = styled.Text`
+  flex; 1;
+  color: #bb3f62;
+  font-weight: 400;
+  font-size: 14px;
+  text-align: center;
+`;
+
+export const PsychologistPrice = styled.Text`
+  flex; 1;
+  color: #bb3f62;
+  font-weight: 800;
+  font-size: 14px;
+  text-align: center;
+`;
+
+export const PsychologistDescription = styled.Text`
+  flex; 1;
+  color: #bb3f62;
+  font-weight: 400;
+  font-size: 8px;
+  text-align: center;
+`;
+
+export const CalendarDay = styled.TouchableOpacity`
+  background-color: ${props => !props.available ? "#ddd" : (props.active ? "#d987a3" : "#f8f8f8")};
+  padding: 5px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+`;
+
+export const CalendarDayText = styled.Text`
+  font-weight: 800;
+  font-size: 30px;
+  text-align: center;
+  color: ${props => !props.available ? "#efefef" : (props.active ? "#f8f8f8" : "#d987a3")};
+`;
+
+export const CalendarChoiceText = styled.Text`
+  font-weight: 400;
+  font-size: 16px;
+  text-align: center;
+  margin-top: 10px;
+  color: ${props => props.active ? "#f8f8f8" : "#d987a3"};
+`;
+
+export const SelectedComponent = styled.TouchableOpacity`
+  padding: 10px;
+  margin: 5px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  background-color: ${props => props.active ? "#bb3f62" : "#f8f8f8"};
+`;
+
+export const SelectedComponentText = styled.Text`
+  font-weight: 400;
+  font-size: 16px;
+  text-align: center;
+  color: ${props => props.active ? "#f8f8f8" : "#bb3f62"};
+`;
+
+export const LikeComponent = styled.View`
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  padding: 20px 20px;
+  border-top-width: 2px;
+  border-top-color: #ffecf2;
+  flex-direction: row;
+  flex-wrap: nowrap;
+`;
+
+export const LikeComponentColumn = styled.View`
+  align-items: flex-start;
+  justify-content: center;
+`;
+
+export const LikeComponentText = styled.Text`
+  font-weight: 600;
+  font-size: 14px;
+  text-align: left;
+  color: #C43A57;
+`;
+
+export const SearchBox = styled.View`
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+  margin: 5px 0px;
+  width: 95%;
+  border-radius: 50px;
+  border-width: 1px;
+  border-color: #d6d6d6;
+  flex-direction: row;
+  flex-wrap: nowrap;
+`;
+
+
+export const SearchBar = styled.TextInput.attrs(props => ({
+  // placeholderTextColor: "#E46788",
+  autoCorrect: false,
+  autoCapitalize: "none"
+}))`
+  margin: 5px 0px;
+  padding: 5px;
+  border-width: 1px;
+  border-color: #d6d6d6;
+  border-radius: 50px;
+  width: 90%;
+  color: #555;
+  font-weight: 500;
+`;
+
+
+export const SearchBarTwo = styled.TextInput.attrs(props => ({
+  // placeholderTextColor: "#E46788",
+  autoCorrect: false,
+  autoCapitalize: "none"
+}))`
+  width: 100%;
+  color: #555;
+  font-weight: 400;
+  font-size: 16px;
 `;

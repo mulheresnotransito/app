@@ -158,7 +158,7 @@ const ChoiceSessions = (props) => {
                 activeOpacity={0.7}
                 style={{ backgroundColor: 'rgba(196, 58, 87, ' + opacity + ')' }} key={c.id}>
                 <Styled.ClassBoxCircleDay>{(c.date).split("/")[0]}</Styled.ClassBoxCircleDay>
-                <Styled.ClassBoxCircleMonth>{(functions.getMonthName(parseInt((c.date).split("/")[1])))}</Styled.ClassBoxCircleMonth>
+                <Styled.ClassBoxCircleMonth>{(functions.getMonthName(parseInt((c.date).split("/")[1]), 1))}</Styled.ClassBoxCircleMonth>
               </Styled.ClassBoxCircleContainer>
             );
           })}

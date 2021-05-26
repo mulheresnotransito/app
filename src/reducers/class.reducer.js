@@ -4,7 +4,8 @@ const initialState = {
   currentClass: {},
   scheduledClass: {},
   newClass: {},
-  classToCancel: {}
+  classToCancel: {},
+  drivers: []
 };
 
 export default (state = initialState, action) => {
@@ -27,6 +28,9 @@ export default (state = initialState, action) => {
       break;
     case 'SET_CLASS_TO_CANCEL':
       return { ...state, classToCancel: action.payload.classToCancel };
+      break;
+    case 'SET_DRIVERS':
+      return { ...state, drivers: action.payload.drivers };
       break;
     case 'RESET_CLASSES':
       return { ...state, classes: [] };

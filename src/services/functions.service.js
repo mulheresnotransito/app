@@ -1,8 +1,12 @@
-export const getMonthName = (monthNumber) => {
+export const getMonthName = (monthNumber, diff = 0) => {
+    parseInt(monthNumber);
+    monthNumber = monthNumber - diff;
     let months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
     return months[monthNumber];
 }
-export const getFullMonthName = (monthNumber) => {
+export const getFullMonthName = (monthNumber, diff = 0) => {
+    parseInt(monthNumber);
+    monthNumber = monthNumber - diff;
     let months = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
     return months[monthNumber];
 }
@@ -23,4 +27,13 @@ export const getFormattedDateBR = (date, separator) => {
     let m = (date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1)); //adicionar + 1 por conta do formato de Date
     let y = date.getFullYear();
     return d + separator + m + separator + y;
+}
+
+export const handleFormatText = (text) => {
+    if (!text) return false;
+    return text.length <= 20 ? text : text.substr(0, 20) + "..."
+}
+
+export const getDateDay = (date, separator) => {
+    return (date.split(separator))[0];
 }

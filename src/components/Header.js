@@ -9,21 +9,24 @@ import bars from "../assets/icons/bars.png"
 import car from "../assets/icons/car.png"
 import heartbeat from "../assets/icons/heartbeat.png"
 import cardiogram from "../assets/icons/cardiogram.png"
+import arrow from "../assets/icons/arrow.png"
 
 const Header = (props) => {
 
-  const handleLogout = () => {
-    props.logout();
-    props.navigation.navigate('Login');
-  }
-
   return (
     <Styled.HeaderContainer>
-      <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
-        <Styled.Illustration source={bars} style={{ width: 30, height: 26.25, marginRight: 3 }} />
-        {/* <Styled.Illustration source={cardiogram} style={{ tintColor: "red", width: 30, height: 26.25, marginRight: 3 }} /> */}
-        {/* <Ionicons name="menu" style={{ marginHorizontal: 10 }} size={32} color="#C43A57" /> */}
-      </TouchableOpacity>
+      {
+        props.home &&
+        <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
+          <Styled.Illustration source={bars} style={{ width: 30, height: 26.25, marginRight: 3 }} />
+        </TouchableOpacity>
+      }
+      {
+        !props.home &&
+        <TouchableOpacity onPress={() => props.navigation.goBack()}>
+          <Styled.Illustration source={arrow} style={{ tintColor: "#C43A57",  width: 30, height: 26.25, marginRight: 3 }} />
+        </TouchableOpacity>
+      }
       {props.screenTitle == "Home" && <View style={{ flex: 1 }} />}
       {props.psychologist && (
         <Styled.HeaderComp>

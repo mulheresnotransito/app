@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Alert
 } from 'react-native';
-
+import * as Updates from "expo-updates";
 import { connect } from 'react-redux';
 
 import { MaterialIcons } from '@expo/vector-icons';
@@ -23,6 +23,26 @@ import * as Styled from '../assets/styles/styled';
 import ModalInfo from '../components/modals/ModalInfo';
 
 const Walkthrough = (props) => {
+
+  const [isUpdated, setIsUpdated] = React.useState(true);
+
+  React.useEffect(() => {
+    // async function updateApp() {
+    //   const { isAvailable } = await Updates.checkForUpdateAsync();
+    //   if (isAvailable) {
+    //     setIsUpdated(false)
+    //     console.log("Update disponível!... atualizando")
+    //     Alert.alert("Atualizando...", "Uma nova versão do aplicativo está sendo carregada. Aguarde...")
+    //     await Updates.fetchUpdateAsync();
+    //     await Updates.reloadAsync(); // depende da sua estratégia
+    //     setIsUpdated(true)
+    //   } else {
+    //     setIsUpdated(true)
+    //     console.log("Nenhuma atualização disponível :)")
+    //   }
+    // }
+    // updateApp();
+  }, []);
 
   const [userToLogin, setUserToLogin] = React.useState({
     email: '',
@@ -50,15 +70,14 @@ const Walkthrough = (props) => {
       <ModalInfo title={modal.title} description={modal.desc} />
       <Styled.Logo source={logo} />
 
-      <Styled.Illustration source={illustration} style={{ width: '100%' }} />
+      <Styled.WalkthroughImage source={illustration} style={{ width: '100%' }} />
 
       <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
-        <Styled.BtnCTA onPress={() => props.navigation.navigate('Login')}>
+        <Styled.BtnCTA onPress={() => isUpdated ? props.navigation.navigate('Login') : Alert.alert("Atualizando... aguarde enquanto o aplicativo é atualizado.")}>
           <Styled.TxtBtnCTA>ENTRAR</Styled.TxtBtnCTA>
         </Styled.BtnCTA>
 
-        <Styled.BtnCTA onPress={() => props.navigation.navigate('Register')} borderColor="#C43A57" bgColor="#fff">
-          {/* <MaterialIcons name="battery-std" size={20} color="#555" /> */}
+        <Styled.BtnCTA onPress={() => isUpdated ? props.navigation.navigate('Register') : Alert.alert("Atualizando... aguarde enquanto o aplicativo é atualizado.")} borderColor="#C43A57" bgColor="#fff">
           <Styled.TxtBtnCTA color="#C43A57">CRIAR CONTA</Styled.TxtBtnCTA>
         </Styled.BtnCTA>
 
@@ -67,6 +86,7 @@ const Walkthrough = (props) => {
           <Styled.TxtBtnCTA color="#C43A57">ENTRAR COM FACEBOOK</Styled.TxtBtnCTA>
         </Styled.BtnCTA> */}
       </View>
+      <Text style={{ color: "#ccc", fontSize: 10 }}>v.1.0.0.24 {!isUpdated ? "[ATUALIZE O APLICATIVO]" : ""}</Text>
 
       <View />
     </Styled.Container>

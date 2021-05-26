@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Clipboard,
   ActivityIndicator
 } from 'react-native';
 
@@ -43,6 +44,10 @@ const Confirmation = (props) => {
   const [isLoadingCar, setIsLoadingCar] = React.useState(true);
   const [isLoadingStartingPoint, setIsLoadingStartingPoint] = React.useState(true);
 
+  const copyToClipboard = (text) => {
+    Clipboard.setString(text)
+  }
+
   const getClasses = async (user_id) => {
     let c = await ClassesController.getAllByUserId(user_id);
     // console.log({ new_classes: c.data.lessons })
@@ -69,7 +74,8 @@ const Confirmation = (props) => {
     setStartingPoint(props.currentClass.starting_point);
     setIsLoadingStartingPoint(false);
 
-    console.log({ ss: props.scheduledClass })
+    console.log({ scheduledClassOnConfirmation: props.scheduledClass.id })
+    console.log({ currentClassOnConfirmation: props.currentClass.id })
 
     getClasses();
 
@@ -98,7 +104,9 @@ const Confirmation = (props) => {
             <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 16, fontWeight: '600', textAlign: 'left' }}>{props.scheduledClass?.driver_name || ""}</Styled.TxtQuestion>
             <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 16, fontWeight: '300', textAlign: 'left' }}>{props.scheduledClass?.car_model || ""} ({props.scheduledClass?.car_brand || ""})</Styled.TxtQuestion>
             <Styled.TxtQuestion style={{ color: "#C43A57", fontSize: 16, fontWeight: '300', textAlign: 'left' }}>Placa: {props.scheduledClass?.car_license_plate || ""}</Styled.TxtQuestion>
-            <TouchableOpacity style={{ padding: 5, backgroundColor: "#C43A57", flexDirection: 'row', flexWrap: 'nowrap', borderRadius: 50 }}>
+            <TouchableOpacity
+              onPress={() => copyToClipboard()}
+              style={{ padding: 5, backgroundColor: "#C43A57", flexDirection: 'row', flexWrap: 'nowrap', borderRadius: 50 }}>
               <Styled.Illustration source={whatsapp} style={{ width: 16, height: 16, marginRight: 3 }} />
               <Styled.TxtBtnCTA color="#fff" style={{ fontSize: 12 }}>Enviar mensagem</Styled.TxtBtnCTA>
             </TouchableOpacity>
@@ -112,7 +120,11 @@ const Confirmation = (props) => {
               <Styled.SectionTitle style={{ textAlign: 'left', fontWeight: 'bold', fontSize: 16, width: '100%', margin: 0 }}>Ponto de partida</Styled.SectionTitle>
             </View>
             <Styled.TxtInput style={{ width: '100%', margin: 0, fontSize: 14 }} placeholder={props.scheduledClass?.starting_point} editable={false} />
-          </Styled.SectionContainer>
+            <TouchableOpacity
+              onPress={() => copyToClipboard(props.scheduledClass?.starting_point)}
+              style={{ padding: 5, backgroundColor: "#C43A57", flexDirection: 'row', flexWrap: 'nowrap', borderRadius: 50 }}>
+              <Styled.TxtBtnCTA color="#fff" style={{ fontSize: 12 }}>Copiar endereço</Styled.TxtBtnCTA>
+            </TouchableOpacity></Styled.SectionContainer>
         </View>
 
         <Styled.BtnSub onPress={() => props.navigation.navigate('Cancel')}>

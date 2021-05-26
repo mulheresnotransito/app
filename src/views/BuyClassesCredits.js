@@ -25,7 +25,6 @@ import Footer from '../components/Footer';
 
 const ByClassesCredits = (props) => {
 
-  const [selectedPackage, setSelectedPackage] = React.useState(packages?.length > 0 ? packages[0] : {});
 
   const [packages, setPackages] = React.useState([
     { id: 1, title: "1 aula", price: "R$65,00", description: "", active: true, credits: 1 },
@@ -33,6 +32,7 @@ const ByClassesCredits = (props) => {
     { id: 3, title: "10 aulas", price: "R$630,00", description: "(em até 3x no cartão de crédito)", active: false, credits: 10 },
     { id: 4, title: "15 aulas", price: "R$930,00", description: "(em até 4x no cartão de crédito)", active: false, credits: 15 },
   ]);
+  const [selectedPackage, setSelectedPackage] = React.useState(packages?.length > 0 ? packages[0] : false);
 
   const handleSelectPackage = async (packageToBuy) => {
     setSelectedPackage(packageToBuy);
@@ -40,9 +40,14 @@ const ByClassesCredits = (props) => {
   }
 
   const handleMoveToCheckout = async () => {
-    if (!props.newCredits) Alert.alert("Ooooops!", "Selecione um pacote para poder prosseguir.");
+    if (!props.newCredits || !selectedPackage) Alert.alert("Ooooops!", "Selecione um pacote para poder prosseguir.");
+    console.log(props.newCredits, selectedPackage)
     props.navigation.navigate("ChoiceCard");
   }
+
+  React.useEffect(() => {
+    if (selectedPackage) props.setNewCredits(selectedPackage)
+  }, [selectedPackage]);
 
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
@@ -50,7 +55,7 @@ const ByClassesCredits = (props) => {
 
       {/* <Styled.Scroll> */}
       <Styled.ScrollContainer>
-        <Styled.TxtQuestion>Quanta aulas você quer reservar?</Styled.TxtQuestion>
+        <Styled.TxtQuestion>Quantas aulas você quer reservar?</Styled.TxtQuestion>
         <Styled.ClassListContainer>
           {packages && packages.map(c => {
             return (
@@ -60,7 +65,7 @@ const ByClassesCredits = (props) => {
                 <Styled.Illustration source={selectedPackage.id == c.id ? check : dotCircle} style={{ width: 20, height: 20, marginHorizontal: 1 }} />
                 <View style={{ flex: 1 }}>
                   <Styled.ClassListItemTitle active={selectedPackage.id == c.id}>{c.title}</Styled.ClassListItemTitle>
-                  <Styled.ClassListItemDescription active={selectedPackage.id == c.id}>{ c.price + " " + c.description}</Styled.ClassListItemDescription>
+                  <Styled.ClassListItemDescription active={selectedPackage.id == c.id}>{c.price + " " + c.description}</Styled.ClassListItemDescription>
                 </View>
               </Styled.ClassListItemContainer>
             );
