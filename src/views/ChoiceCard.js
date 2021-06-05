@@ -24,6 +24,7 @@ import * as Styled from '../assets/styles/styled';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import * as UsersController from "../controllers/users.controller";
+import * as Functions from "../services/functions.service";
 
 const ChoiceCard = (props) => {
 
@@ -32,16 +33,17 @@ const ChoiceCard = (props) => {
   const toggleSaveCardSwitch = () => setSaveCard(previousState => !previousState);
   const toggleTermsAndConditionsSwitch = () => setTermsAndConditions(previousState => !previousState);
   const [paymentInfo, setPaymentInfo] = React.useState({
-    creditCard: { number: "", expiration_date: "", security_code: "", client_name: "" },
+    creditCard: { number: "", expirationDate: "", securityCode: "", holder: "" },
     newCredits: props.newCredits ? props.newCredits : 0
   });
   const handleBuy = async (buyInfo) => {
     console.log(buyInfo)
     try {
-      if (!buyInfo.creditCard.number || !buyInfo.creditCard.expiration_date || !buyInfo.creditCard.security_code || !buyInfo.creditCard.client_name) {
+      if (!buyInfo.creditCard.number || !buyInfo.creditCard.expirationDate || !buyInfo.creditCard.securityCode || !buyInfo.creditCard.holder) {
         Alert.alert("Erro", "Preencha todos os campos.");
         return false;
       }
+      buyInfo.creditCard.brand = Functions.getCardFlag(buyInfo.creditCard.number);
       let response = await UsersController.buyClassesCredits(paymentInfo, props.user, paymentInfo.newCredits);
       props.setClassesCredits(response.data.user.classes_credits);
       Alert.alert("Parabéns!", "Créditos comprados com sucesso!");
@@ -70,9 +72,11 @@ const ChoiceCard = (props) => {
         </Styled.BoxTitle>
 
         <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
-          <Styled.CheckoutInput onChangeText={(e) => setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, client_name: e } })} placeholder="Nome do titular" />
+          <Styled.CheckoutInput onChangeText={(e) => setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, holder: e } })} placeholder="Nome do titular" />
           <TextInputMask
-            type={'credit-card'}
+            // type={'credit-card'}
+            type={'custom'}
+            options={{ mask: "9999.9999.9999.9999" }}
             value={paymentInfo.creditCard.number}
             onChangeText={text => {
               setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, number: text } });
@@ -87,10 +91,10 @@ const ChoiceCard = (props) => {
 
             <TextInputMask
               type={'custom'}
-              value={paymentInfo.creditCard.expiration_date}
-              options={{ mask: "99/99" }}
+              value={paymentInfo.creditCard.expirationDate}
+              options={{ mask: "99/9999" }}
               onChangeText={text => {
-                setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, expiration_date: text } });
+                setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, expirationDate: text } });
               }}
               placeholder="Validade"
               placeholderTextColor="#E46788"
@@ -98,10 +102,10 @@ const ChoiceCard = (props) => {
             />
             <TextInputMask
               type={'custom'}
-              value={paymentInfo.creditCard.security_code}
+              value={paymentInfo.creditCard.securityCode}
               options={{ mask: "999" }}
               onChangeText={text => {
-                setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, security_code: text } });
+                setPaymentInfo({ ...paymentInfo, creditCard: { ...paymentInfo.creditCard, securityCode: text } });
               }}
               placeholder="CVV"
               placeholderTextColor="#E46788"

@@ -40,7 +40,7 @@ const Login = (props) => {
         let newConsultations = response.data.consultations;
         let newClasses = response.data.lessons;
 
-        console.log({ newClasses })
+        // console.log({ newClasses })
 
         await props.setConsultations(newConsultations)
         await props.setClasses(newClasses)

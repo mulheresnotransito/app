@@ -40,7 +40,7 @@ const SingleNotice = (props) => {
         {props.currentNotice && (
           <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
             <Styled.Illustration source={image} style={{ width: '100%', height: 300, marginVertical: 5 }} />
-            <Styled.TxtQuestion style={{ marginVertical: 5, fontSize: 14, width: '92%', textAlign: "left" }}>{props.currentNotice.title}</Styled.TxtQuestion>
+            <Styled.TxtQuestion style={{ marginVertical: 10, fontSize: 14, width: '92%', textAlign: "left" }}>{props.currentNotice.title}</Styled.TxtQuestion>
             {/* <Styled.TxtQuestion style={{ marginBottom: 5, fontSize: 14, width: '90%', fontWeight: '300', textAlign: 'justify' }}>{props.currentNotice.description}</Styled.TxtQuestion> */}
             <Styled.TxtQuestion style={{ color: '#555', marginBottom: 5, fontSize: 14, width: '90%', fontWeight: '300', textAlign: 'justify' }}>{props.currentNotice.text}</Styled.TxtQuestion>
           </View>

@@ -35,7 +35,7 @@ const Home = (props) => {
   const [clickedLocation, setClickedLocation] = React.useState(null);
   const [modalDateVisible, setModalDateVisible] = React.useState(false);
   const [modalHourVisible, setModalHourVisible] = React.useState(false);
-  const [map, setMap] = React.useState({});
+  const [map, setMap] = React.useState(false);
   const [filtered, setFiltered] = React.useState([]);
   const [results, setResults] = React.useState([]);
   const [searchText, setSearchText] = React.useState('');
@@ -47,39 +47,31 @@ const Home = (props) => {
     let { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
       console.log('Permission to access location was denied');
+      Alert.alert("Ops...", "Permissão de localização negada :(");
       return;
     }
-
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
+    try {
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    } catch (e) {
+      console.log(e)
+    }
 
   }
 
   const getScheduledClasses = async (user_id) => {
-    // console.log({ user_id })
     let c = await ClassesController.getAllScheduledByUserId(user_id);
     let scheduled = c.data.scheduled_lessons;
-    // console.log({ scheduled })
     await props.setScheduledClasses(scheduled);
   }
 
-
-
-
   const getScheduledConsultations = async (user_id) => {
-    // console.log({ user_id })
     let c = await ConsultationsController.getAllScheduledByUserId(user_id);
     let scheduled = c.data.scheduled_consultations;
-    // console.log({ scheduled })
     await props.setScheduledConsultations(scheduled);
   }
 
-
-
   const handleSchedule = async () => {
-
-    // console.log(props.newClass);
-    console.log('---1---')
 
     if (!props.newClass?.date || !props.newClass?.hour || !props.newClass?.starting_point) {
       Alert.alert("Oooops!", "Preencha todas as informações antes de agendar a aula.");
@@ -89,45 +81,27 @@ const Home = (props) => {
       return false;
     }
     let classToSchedule = props.newClass;
-    console.log('---2---')
     classToSchedule = {
       ...classToSchedule,
       id_default_time: classToSchedule.hour.id,
       id_user_client: props.user.id
     };
-    console.log('---3---')
 
     try {
 
-      console.log('---4---')
       let response = await ClassesController.schedule(classToSchedule);
-      console.log('---5---')
       if (!response.error) {
         let scheduled_lessons = (response.data.scheduled_lessons);
         let last_lesson_scheduled = (response.data.last_lesson_scheduled);
-        console.log({ last_lesson_scheduled })
-        console.log('---6---')
-        console.log(props.currentClass?.id)
         await props.setCurrentClass(last_lesson_scheduled);
-        console.log('---7---')
-        console.log(props.currentClass?.id)
         await props.setScheduledClasses(scheduled_lessons);
-        console.log('---8---')
-        console.log(props.scheduledClass?.id)
         await props.setScheduledClass(last_lesson_scheduled);
-        console.log(props.scheduledClass?.id)
-        console.log('---9---')
         await props.setClassesCredits(response.data.classes_credits);
-        console.log('---10---')
         props.navigation.navigate("Confirmation");
-        console.log('---11---')
       }
       else {
         Alert.alert("Erro", "Error: [" + response.error_code + "] - " + response.error);
-
       }
-      console.log('---12---')
-
     } catch (error) {
       console.log({ error });
       Alert.alert("Erro", "Não foi possível agendar a aula. Tente novamente.");
@@ -139,18 +113,35 @@ const Home = (props) => {
 
   const realignMap = () => {
 
-    setTimeout(() => {
-      map.fitToSuppliedMarkers(["destination"], {
-        edgePadding: { left: 100, top: 100, right: 100, bottom: 100 }, animated: true
-      })
-    }, 1000);
-  };
+    try {
+      console.log("trying to realing map", map.fitToSuppliedMarkers ? "1" : "0")
+      setTimeout(() => {
+        console.log("into set timeout...", map.fitToSuppliedMarkers ? "1" : "0");
 
-  const handleOnSearch = (text) => {
-    if (text != "") setFiltered(results.filter(r => r.title.includes(text)));
-    else setFiltered([]);
-    return text.toLowerCase();
-  }
+
+
+        if (location && selectedResult) map.fitToCoordinates([
+          { latitude: selectedResult?.geometry?.location.lat, longitude: selectedResult?.geometry?.location.lng },
+          { latitude: location.coords.latitude, longitude: location.coords.longitude }
+        ],
+          {
+            edgePadding: { left: 100, top: 100, right: 100, bottom: 100 }, animated: true
+          }
+        );
+        else if (location)
+          map.fitToCoordinates([
+            { latitude: location?.coords?.latitude, longitude: location?.coords?.longitude }
+          ]);
+
+        // map.fitToSuppliedMarkers(["destination", "origin"], {
+        //   edgePadding: { left: 1000, top: 1000, right: 1000, bottom: 1000 }, animated: true
+        // })
+      }, 1000);
+    } catch (error) {
+      console.log({ error_on_realing_map: error })
+    }
+
+  };
 
   const handleSetClickedLocation = (loc) => {
     setClickedLocation(loc)
@@ -176,14 +167,18 @@ const Home = (props) => {
   }, [props.user]);
 
   React.useEffect(() => {
+    if (map) {
+      realignMap();
+      console.log({ location });
+      console.log({ selectedResult })
+    }
+  }, [location]);
+
+  React.useEffect(() => {
     //ao alterar o resultado selecionado
     // if(selectedResult) handleSetClickedLocation(selectedResult)
     if (selectedResult) handleSetSelectedResult(selectedResult)
   }, [selectedResult]);
-
-  React.useEffect(() => {
-    console.log({ currentClass: props.currentClass })
-  }, [props.currentClass]);
 
   return (
     <Styled.Container style={{ paddingTop: 0, backgroundColor: '#fff' }}>
@@ -196,7 +191,7 @@ const Home = (props) => {
       {
         props.scheduledClasses?.length > 0
         &&
-        <View style={{ height: 110, width: "100%", alignItems: "center", justifyContent: "center"}}>
+        <View style={{ height: 110, width: "100%", alignItems: "center", justifyContent: "center" }}>
           <Styled.SectionTitleTwo style={{ width: "90%" }}>Próximas aulas</Styled.SectionTitleTwo>
 
           <Styled.ClassesScrollHorizontal>
@@ -237,31 +232,36 @@ const Home = (props) => {
               initialRegion={{
                 // latitude: location.coords.latitude || 37.4219312,
                 // longitude: location.coords.longitude || -122.0840363,
-                latitude: selectedResult?.geometry?.location.lat || 37.4219312,
-                longitude: selectedResult?.geometry?.location.lng || -122.0840363,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
+                // latitude: selectedResult?.geometry?.location.lat || location?.coords?.latitude || 37.4219312,
+                // longitude: selectedResult?.geometry?.location.lng || location?.coords?.longitude || -122.0840363,
+                latitude: selectedResult ? selectedResult?.geometry?.location.lat : (location ? (location?.coords?.latitude) : 37.4219312),
+                longitude: selectedResult ? selectedResult?.geometry?.location.lng : (location ? (location?.coords?.longitude) : -122.0840363),
+                // latitudeDelta: 0.0922,
+                // longitudeDelta: 0.0421,
+                latitudeDelta: 0.004757,
+                longitudeDelta: 0.006866,
               }}
               loadingEnabled
+              showsUserLocation={location ? true : false}
               style={StyleSheet.absoluteFillObject}
               ref={object => setMap(object)}
             >
               {/* {location && <Marker
                 coordinate={{ latitude: location?.coords.latitude, longitude: location?.coords.longitude }}
-                title={'Aluna X'}
-                description={'Aluna X - 2 aulas'}
+                title={props.user.first_name}
+                description={'Minha localização atual'}
                 icon={pic}
                 style={{}}
                 identifier="origin"
-              />}
-              {clickedLocation && <Marker
+              />} */}
+              {/* {clickedLocation && <Marker
                 coordinate={{ latitude: clickedLocation?.coords.latitude, longitude: clickedLocation?.coords.longitude }}
                 title={clickedLocation?.title}
                 description={'Destino clicado no mapa.'}
                 icon={pic}
                 style={{}}
                 identifier="destination"
-              />} */}
+              />}  */}
               {selectedResult && <Marker
                 coordinate={{ latitude: selectedResult?.geometry?.location.lat, longitude: selectedResult?.geometry?.location.lng }}
                 title={selectedResult?.title}
@@ -369,7 +369,7 @@ const Home = (props) => {
       </Styled.MapContainer>
 
       <Footer screenTitle="Home" client navigation={props.navigation} />
-    </Styled.Container>
+    </Styled.Container >
   );
 };
 

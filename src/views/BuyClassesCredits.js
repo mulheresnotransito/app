@@ -27,10 +27,10 @@ const ByClassesCredits = (props) => {
 
 
   const [packages, setPackages] = React.useState([
-    { id: 1, title: "1 aula", price: "R$65,00", description: "", active: true, credits: 1 },
-    { id: 2, title: "5 aulas", price: "R$320,00", description: "(em até 2x no cartão de crédito)", active: false, credits: 5 },
-    { id: 3, title: "10 aulas", price: "R$630,00", description: "(em até 3x no cartão de crédito)", active: false, credits: 10 },
-    { id: 4, title: "15 aulas", price: "R$930,00", description: "(em até 4x no cartão de crédito)", active: false, credits: 15 },
+    { id: 1, title: "1 aula", installments: 1, price: "R$65,00", description: "", active: true, credits: 1 },
+    { id: 2, title: "5 aulas", installments: 2, price: "R$320,00", description: "(em até 2x no cartão de crédito)", active: false, credits: 5 },
+    { id: 3, title: "10 aulas", installments: 3, price: "R$630,00", description: "(em até 3x no cartão de crédito)", active: false, credits: 10 },
+    { id: 4, title: "15 aulas", installments: 4, price: "R$930,00", description: "(em até 4x no cartão de crédito)", active: false, credits: 15 },
   ]);
   const [selectedPackage, setSelectedPackage] = React.useState(packages?.length > 0 ? packages[0] : false);
 
