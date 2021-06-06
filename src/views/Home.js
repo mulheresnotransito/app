@@ -21,7 +21,6 @@ import * as functions from '../services/functions.service';
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 
-import pic from '../assets/images/profile-pic-1.png';
 import * as ClassesController from '../controllers/classes.controller';
 import * as ConsultationsController from '../controllers/consultations.controller';
 import ModalChoiceClassDate from '../components/modals/ModalChoiceClassDate';
@@ -37,7 +36,6 @@ const Home = (props) => {
   const [modalHourVisible, setModalHourVisible] = React.useState(false);
   const [map, setMap] = React.useState(false);
   const [filtered, setFiltered] = React.useState([]);
-  const [results, setResults] = React.useState([]);
   const [searchText, setSearchText] = React.useState('');
   const [selectedResult, setSelectedResult] = React.useState(false);
   const [isEditingAddress, setIsEditingAddress] = React.useState(false);
@@ -175,8 +173,6 @@ const Home = (props) => {
   }, [location]);
 
   React.useEffect(() => {
-    //ao alterar o resultado selecionado
-    // if(selectedResult) handleSetClickedLocation(selectedResult)
     if (selectedResult) handleSetSelectedResult(selectedResult)
   }, [selectedResult]);
 
@@ -230,14 +226,8 @@ const Home = (props) => {
 
             <MapView
               initialRegion={{
-                // latitude: location.coords.latitude || 37.4219312,
-                // longitude: location.coords.longitude || -122.0840363,
-                // latitude: selectedResult?.geometry?.location.lat || location?.coords?.latitude || 37.4219312,
-                // longitude: selectedResult?.geometry?.location.lng || location?.coords?.longitude || -122.0840363,
                 latitude: selectedResult ? selectedResult?.geometry?.location.lat : (location ? (location?.coords?.latitude) : 37.4219312),
                 longitude: selectedResult ? selectedResult?.geometry?.location.lng : (location ? (location?.coords?.longitude) : -122.0840363),
-                // latitudeDelta: 0.0922,
-                // longitudeDelta: 0.0421,
                 latitudeDelta: 0.004757,
                 longitudeDelta: 0.006866,
               }}
@@ -246,27 +236,10 @@ const Home = (props) => {
               style={StyleSheet.absoluteFillObject}
               ref={object => setMap(object)}
             >
-              {/* {location && <Marker
-                coordinate={{ latitude: location?.coords.latitude, longitude: location?.coords.longitude }}
-                title={props.user.first_name}
-                description={'Minha localização atual'}
-                icon={pic}
-                style={{}}
-                identifier="origin"
-              />} */}
-              {/* {clickedLocation && <Marker
-                coordinate={{ latitude: clickedLocation?.coords.latitude, longitude: clickedLocation?.coords.longitude }}
-                title={clickedLocation?.title}
-                description={'Destino clicado no mapa.'}
-                icon={pic}
-                style={{}}
-                identifier="destination"
-              />}  */}
               {selectedResult && <Marker
                 coordinate={{ latitude: selectedResult?.geometry?.location.lat, longitude: selectedResult?.geometry?.location.lng }}
-                title={selectedResult?.title}
-                description={'Destino clicado no mapa.'}
-                icon={pic}
+                title={selectedResult?.name}
+                description={'Ponto de partida da aula'}
                 style={{}}
                 identifier="destination"
               />}
@@ -275,14 +248,11 @@ const Home = (props) => {
 
           </View>}
 
-          {/* <View style={{ height: 110, flexDirection: 'column', width: '90%', marginVertical: 0, marginHorizontal: 0, borderRadius: 10, backgroundColor: "red", padding: 10, }}> */}
-          {/* <View style={{ height: 150, flexDirection: 'column', width: '90%', marginVertical: 0, marginHorizontal: 0, borderRadius: 10, backgroundColor: "rgba(0,0,0,0.1)", padding: 10, height: 200 }}> */}
           <View style={{ backgroundColor: "#FFF", maxHeight: isEditingAddress ? 200 : 80, flexDirection: 'column', width: '90%', marginVertical: 5, marginHorizontal: 0, borderRadius: 10, padding: 10, height: 200 }}>
             <View style={{ flexDirection: 'row', flexWrap: 'nowrap', marginBottom: 0 }}>
               <Styled.Illustration source={dotCircle} style={{ width: 20, height: 20, marginRight: 3 }} />
               <Styled.SectionTitle style={{ textAlign: 'left', fontWeight: 'bold', fontSize: 16, width: '100%', margin: 0 }}>Onde nos encontramos?</Styled.SectionTitle>
             </View>
-            {/* <Styled.TxtInput style={{ width: '90%', margin: 0, fontSize: 14 }} value={searchText} onChangeText={(e) => setSearchText(handleOnSearch(e))} placeholder="Digite o local aqui..." /> */}
 
             <GooglePlacesAutocomplete
               placeholder='Digite o local aqui...'
@@ -329,7 +299,6 @@ const Home = (props) => {
             />
           </View>
 
-          {/* </View> */}
 
           <View style={{ flex: 2 }} />
 
