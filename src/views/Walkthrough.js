@@ -27,21 +27,21 @@ const Walkthrough = (props) => {
   const [isUpdated, setIsUpdated] = React.useState(true);
 
   React.useEffect(() => {
-    // async function updateApp() {
-    //   const { isAvailable } = await Updates.checkForUpdateAsync();
-    //   if (isAvailable) {
-    //     setIsUpdated(false)
-    //     console.log("Update disponível!... atualizando")
-    //     Alert.alert("Atualizando...", "Uma nova versão do aplicativo está sendo carregada. Aguarde...")
-    //     await Updates.fetchUpdateAsync();
-    //     await Updates.reloadAsync(); // depende da sua estratégia
-    //     setIsUpdated(true)
-    //   } else {
-    //     setIsUpdated(true)
-    //     console.log("Nenhuma atualização disponível :)")
-    //   }
-    // }
-    // updateApp();
+    async function updateApp() {
+      const { isAvailable } = await Updates.checkForUpdateAsync();
+      if (isAvailable) {
+        setIsUpdated(false)
+        console.log("Update disponível!... atualizando")
+        Alert.alert("Atualizando...", "Uma nova versão do aplicativo está sendo carregada. Aguarde...")
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync(); // depende da sua estratégia
+        setIsUpdated(true)
+      } else {
+        setIsUpdated(true)
+        console.log("Nenhuma atualização disponível :)")
+      }
+    }
+    updateApp();
   }, []);
 
   const [userToLogin, setUserToLogin] = React.useState({
@@ -86,7 +86,7 @@ const Walkthrough = (props) => {
           <Styled.TxtBtnCTA color="#C43A57">ENTRAR COM FACEBOOK</Styled.TxtBtnCTA>
         </Styled.BtnCTA> */}
       </View>
-      <Text style={{ color: "#ccc", fontSize: 10 }}>v.1.0.0.34  {!isUpdated ? "[ATUALIZE O APLICATIVO]" : ""}</Text>
+      <Text style={{ color: "#ccc", fontSize: 10 }}>v.1.0.0.38  {!isUpdated ? "[ATUALIZE O APLICATIVO]" : ""}</Text>
 
       <View />
     </Styled.Container>

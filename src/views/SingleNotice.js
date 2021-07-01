@@ -7,7 +7,8 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Share
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -27,6 +28,26 @@ import Footer from '../components/Footer';
 import * as NoticesController from "../controllers/notices.controller";
 
 const SingleNotice = (props) => {
+
+  const onShare = async (title, text) => {
+    try {
+      const result = await Share.share({
+        message:
+          'Mulheres no Trânsito | ' + title + '\n\n' + text + '\n\n' + 'http://centromulheresnotransito.com',
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
@@ -52,7 +73,9 @@ const SingleNotice = (props) => {
             <Styled.LikeComponentText>Gostou do post?</Styled.LikeComponentText>
             <Styled.LikeComponentText>Compartilhe com os amigos!</Styled.LikeComponentText>
           </Styled.LikeComponentColumn>
-          <Styled.Illustration source={share} style={{ tintColor: "#eeaabe", height: 23, width: 20}} />
+          <TouchableOpacity onPress={() => onShare(props.currentNotice?.title, props.currentNotice?.text)} >
+            <Styled.Illustration source={share} style={{ tintColor: "#eeaabe", height: 23, width: 20 }} />
+          </TouchableOpacity>
         </Styled.LikeComponent>
 
       </Styled.ScrollContainer>

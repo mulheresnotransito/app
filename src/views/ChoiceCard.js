@@ -43,6 +43,13 @@ const ChoiceCard = (props) => {
         Alert.alert("Erro", "Preencha todos os campos.");
         return false;
       }
+
+      if(buyInfo.creditCard.expirationDate.length !== 7){
+        Alert.alert("Erro", "O campo Data de validade deve estar no formato MM/AAAA.");
+        return false;
+      }
+
+      
       buyInfo.creditCard.brand = Functions.getCardFlag(buyInfo.creditCard.number);
       let response = await UsersController.buyClassesCredits(paymentInfo, props.user, paymentInfo.newCredits);
       props.setClassesCredits(response.data.user.classes_credits);

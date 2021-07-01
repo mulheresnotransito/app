@@ -167,8 +167,8 @@ const Home = (props) => {
   React.useEffect(() => {
     if (map) {
       realignMap();
-      console.log({ location });
-      console.log({ selectedResult })
+      // console.log({ location });
+      // console.log({ selectedResult })
     }
   }, [location]);
 

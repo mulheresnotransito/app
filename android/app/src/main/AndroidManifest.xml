@@ -33,6 +33,9 @@
     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@devmulheresnotransito/mulheres-no-transito" />
     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="40.0.0" />
     <meta-data android:name="expo.modules.updates.EXPO_RELEASE_CHANNEL" android:value="default" />
+    <meta-data android:name="com.google.android.geo.API_KEY"
+    android:value="AIzaSyAtWk0ZrDrypup_6psULiMASuo46CXNr7I" />
+    <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
   <activity
     android:name=".MainActivity"

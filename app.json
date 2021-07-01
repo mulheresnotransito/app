@@ -15,7 +15,12 @@
       "**/*"
     ],
     "android": {
-      "package": "com.rria.mulheresnotransito.android"
+      "package": "com.rria.mulheresnotransito.android",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAtWk0ZrDrypup_6psULiMASuo46CXNr7I"
+        }
+      }
     },
     "ios": {
       "bundleIdentifier": "com.rria.mulheresnotransito.ios",
