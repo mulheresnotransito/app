@@ -433,6 +433,12 @@ export const ProfileIcon = styled.Image`
   border-radius: 50px;
   tint-color: #ccc;
 `;
+export const FakePhoto = styled.View`
+  width: 80px;
+  height: 80px;
+  border-radius: 50px;
+  tint-color: #231123;
+`;
 export const Illustration = styled.Image`
   width: ${props => 1125 * 0.3 + "px"};
   height: ${props => 1082 * 0.3 + "px"};

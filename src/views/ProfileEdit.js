@@ -63,7 +63,8 @@ const ProfileEdit = (props) => {
         {/* {props?.user?.profile_photo && <Styled.ProfileImage2 source={props?.user?.profile_photo && profilePic} />} */}
         {/* {props?.user?.profile_photo && <Styled.ProfileImage2 source={{ uri: props?.user?.profile_photo }} />} */}
         {/* {!props?.user?.profile_photo && <Styled.ProfileImage2 source={profilePic} />} */}
-        {!props.user.profile_photo && <Styled.ProfileIcon source={profileIcon} />}
+        {!props.user?.profile_photo && <Styled.ProfileIcon source={profileIcon} />}
+        {props.user?.profile_photo && <Styled.FakePhoto />}
         <Styled.BtnSub>
           <Styled.TxtBtnSub>Trocar foto de perfil</Styled.TxtBtnSub>
         </Styled.BtnSub>

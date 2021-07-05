@@ -86,7 +86,7 @@ const Walkthrough = (props) => {
           <Styled.TxtBtnCTA color="#C43A57">ENTRAR COM FACEBOOK</Styled.TxtBtnCTA>
         </Styled.BtnCTA> */}
       </View>
-      <Text style={{ color: "#ccc", fontSize: 10 }}>v.1.0.0.38  {!isUpdated ? "[ATUALIZE O APLICATIVO]" : ""}</Text>
+      <Text style={{ color: "#ccc", fontSize: 10 }}>v.1.0.0.40  {!isUpdated ? "[ATUALIZE O APLICATIVO]" : ""}</Text>
 
       <View />
     </Styled.Container>

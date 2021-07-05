@@ -45,11 +45,12 @@ const Login = (props) => {
         await props.setConsultations(newConsultations)
         await props.setClasses(newClasses)
         setIsLoading(false);
-        return true;
+        // return true;
+        return response.data.user;
       }
       else {
-        Alert.alert('Erro', response?.error && response?.error)
         setIsLoading(false);
+        Alert.alert('Erro', response?.error && response?.error)
         return false;
       }
     }
@@ -59,6 +60,14 @@ const Login = (props) => {
       Alert.alert('Erro', error);
     }
 
+  }
+
+  const handleMoveUserByType = (user) => {
+
+    // (props.navigation.navigate('Home'))
+    // if (user.is_client) props.navigation.navigate('Home')
+    // if (user.id_driver) props.navigation.navigate('Home')
+    // if (user.is_psychologist) props.navigation.navigate('Home')
   }
 
   return (
@@ -72,7 +81,15 @@ const Login = (props) => {
           <Styled.TxtInput1 placeholder="E-mail" onChangeText={(t) => setUserToLogin({ ...userToLogin, email: t.toLowerCase() })} />
           <Styled.TxtInput1 placeholder="Senha" secureTextEntry onChangeText={(t) => setUserToLogin({ ...userToLogin, password: t })} />
         </View>
-        <Styled.BtnCTA onPress={async () => await loginUser(userToLogin) && (props.navigation.navigate('Home'))}>
+        <Styled.BtnCTA onPress={async () => {
+          let temp = await loginUser(userToLogin)
+          if (temp) {
+            handleMoveUserByType(temp)
+          } else {
+            return false
+          }
+
+        }}>
           <Styled.TxtBtnCTA>{!isLoading ? 'ENTRAR' : 'Carregando...'}</Styled.TxtBtnCTA>
         </Styled.BtnCTA>
       </View>
