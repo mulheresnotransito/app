@@ -65,9 +65,9 @@ const Login = (props) => {
   const handleMoveUserByType = (user) => {
 
     // (props.navigation.navigate('Home'))
-    // if (user.is_client) props.navigation.navigate('Home')
-    // if (user.id_driver) props.navigation.navigate('Home')
-    // if (user.is_psychologist) props.navigation.navigate('Home')
+    if (user.is_client) props.navigation.navigate('Home')
+    else if (user.id_driver) props.navigation.navigate('DriverWallet')
+    else if (user.is_psychologist) props.navigation.navigate('PsychologistWallet')
   }
 
   return (

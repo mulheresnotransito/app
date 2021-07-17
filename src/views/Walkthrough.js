@@ -27,39 +27,27 @@ const Walkthrough = (props) => {
   const [isUpdated, setIsUpdated] = React.useState(true);
 
   React.useEffect(() => {
-    async function updateApp() {
-      const { isAvailable } = await Updates.checkForUpdateAsync();
-      if (isAvailable) {
-        setIsUpdated(false)
-        console.log("Update disponível!... atualizando")
-        Alert.alert("Atualizando...", "Uma nova versão do aplicativo está sendo carregada. Aguarde...")
-        await Updates.fetchUpdateAsync();
-        await Updates.reloadAsync(); // depende da sua estratégia
-        setIsUpdated(true)
-      } else {
-        setIsUpdated(true)
-        console.log("Nenhuma atualização disponível :)")
-      }
-    }
-    updateApp();
+    
+    // async function updateApp() {
+    //   const { isAvailable } = await Updates.checkForUpdateAsync();
+    //   if (isAvailable) {
+    //     setIsUpdated(false)
+    //     console.log("Update disponível!... atualizando")
+    //     Alert.alert("Atualizando...", "Uma nova versão do aplicativo está sendo carregada. Aguarde...")
+    //     await Updates.fetchUpdateAsync();
+    //     await Updates.reloadAsync(); // depende da sua estratégia
+    //     setIsUpdated(true)
+    //   } else {
+    //     setIsUpdated(true)
+    //     console.log("Nenhuma atualização disponível :)")
+    //   }
+    // }
+    // updateApp();
+
   }, []);
-
-  const [userToLogin, setUserToLogin] = React.useState({
-    email: '',
-    password: ''
-  });
-
-  const loginUser = (user) => {
-    // if (user.email == 'login123' && user.password == 'senha123')
-    //   props.navigation.navigate('Home');
-    // else
-    //   Alert.alert('Erro', 'Usuário ou senha incorretos');
-    props.navigation.navigate('Home');
-  }
 
   const [info, setInfo] = React.useState(props.route.params);
   React.useEffect(() => {
-    // console.log({ props })
     setInfo(props.route.params);
   }, [props.route.params]);
 

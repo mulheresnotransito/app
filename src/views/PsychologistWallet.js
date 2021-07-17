@@ -57,7 +57,9 @@ const PsychologistWallet = (props) => {
     { id: 5, day: '01', month: 'novembro', title: 'sessão psicológica', description: 'início: 19:30' },
   ]);
 
-
+  React.useEffect(()=>{
+    console.log(props.user)
+  },[]);
 
   return (
     <Styled.Container style={{ paddingTop: 0 }}>
@@ -68,7 +70,7 @@ const PsychologistWallet = (props) => {
         <View style={{ alignItems: 'center', justifyContent: 'center', width: '95%', marginVertical: 10, flexDirection: 'row', flexWrap: 'nowrap', }}>
           <Styled.ProfileImage source={profilePic} />
           <View style={{ marginHorizontal: 15, flex: 1 }}>
-            <Text style={{ fontWeight: '600', fontSize: 18, color: "#C43A57" }}>Maristela Costa</Text>
+            <Text style={{ fontWeight: '600', fontSize: 18, color: "#C43A57" }}>{props?.user?.first_name} {props?.user?.last_name}</Text>
             <TouchableOpacity style={{ width: 100, padding: 3, marginVertical: 1, backgroundColor: '#C43A57', borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
               <Text style={{ fontWeight: '500', fontSize: 12, color: "#fff" }}>Editar perfil</Text>
             </TouchableOpacity>
@@ -79,7 +81,7 @@ const PsychologistWallet = (props) => {
           <Text style={{ fontWeight: '400', fontSize: 24, color: "#fff", flex: 1 }}>Carteira</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
             <Text style={{ fontWeight: '400', fontSize: 16, color: "#fff", margin: 0, padding: 0, textAlign: 'right' }}>R$</Text>
-            <Text style={{ fontWeight: '800', fontSize: 32, color: "#fff", margin: 0, padding: 0, textAlign: 'left' }}>1.420,00</Text>
+            <Text style={{ fontWeight: '800', fontSize: 32, color: "#fff", margin: 0, padding: 0, textAlign: 'left' }}>120,00</Text>
           </View>
         </View>
 
@@ -174,6 +176,8 @@ const PsychologistWallet = (props) => {
 
 const mapStateToProps = (state) => {
   return {
+    //user
+    user: state.userReducer,
     //modal
     modalInfoVisible: state.modalReducer.modalInfoVisible,
   }
